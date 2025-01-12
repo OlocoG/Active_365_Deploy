@@ -31,4 +31,9 @@ export class UserController {
         return this.userService.updateUser(id, user);
       }
 
+    @Put('/deactivate/:id')
+    cancelAppointment(@Param('id') userId: string) {
+      return this.userService.deactivateUser(userId);
+    }
+
 }

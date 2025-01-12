@@ -6,6 +6,7 @@ import { Products } from 'src/entities/products.entity';
 import { Repository } from 'typeorm';
 import { FilesUploadService } from 'src/files-upload/files-upload.service';
 import { FilterProductsDto } from 'src/dto/createProduct.dto';
+import { statusProduct } from 'src/enums/status.enum';
 
 
 @Injectable()
@@ -70,6 +71,7 @@ export class ProductsService {
       'product.imgUrl',
       'product.subcategory',
       'category.name',
+      'product.status'
       
     ]);
   
@@ -87,7 +89,7 @@ export class ProductsService {
     const product = await this.productsRepository.findOne({
         where: { id: id },
         relations: ['category'],
-        select: ['id', 'name', 'description', 'price', 'stock', 'imgUrl', 'category', 'subcategory']
+        select: ['id', 'name', 'description', 'price', 'stock', 'imgUrl', 'category', 'subcategory', 'status']
     });
     if (!product) {
         throw new NotFoundException(`Product with ID ${id} not found..`);
@@ -149,7 +151,7 @@ export class ProductsService {
     const products = await this.productsRepository.find({
       where: { category: { id: categoryId } },
       relations: ['category'],
-      select: ['id', 'name', 'description', 'price', 'stock', 'imgUrl', 'category', 'subcategory']
+      select: ['id', 'name', 'description', 'price', 'stock', 'imgUrl', 'category', 'subcategory', 'status']
     });
   
     if (products.length === 0) {
@@ -164,5 +166,18 @@ export class ProductsService {
       .orderBy('RANDOM()') 
       .limit(limit)
       .getMany();
+  }
+
+  async deactivateProduct(productId: string): Promise<{ message: string }> {
+    
+    const product = await this.productsRepository.findOne({ where: { id: productId } });
+    if (!product) {
+        throw new NotFoundException(`Product with ID ${productId} not found.`);
+    }
+
+    product.status = statusProduct.inactive;
+    await this.productsRepository.save(product);
+
+    return { message: `Product with ID ${productId} has been deactivated successfully.` };
   }
 }

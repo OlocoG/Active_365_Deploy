@@ -4,6 +4,7 @@ import { Gyms } from 'src/entities/gyms.entity';
 import { Repository } from 'typeorm';
 import * as data from '../seeders/gyms.json'
 import * as bcrypt from 'bcrypt'
+import { statusGym } from 'src/enums/status.enum';
 
 
 @Injectable()
@@ -44,7 +45,7 @@ export class GymsService {
   async getGyms() {
     const gyms = await this.gymsRepository.find({
       relations: ['users', 'classes'],
-      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt', 'users'],
+      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt', 'users', 'status'],
     });
     if(gyms.length === 0) {
       throw new NotFoundException('No gyms registered in the database were found');
@@ -56,7 +57,7 @@ export class GymsService {
     const gymFound = await this.gymsRepository.findOne({
       where: { id: id },
       relations: ['users', 'classes'],
-      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt'],
+      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt', 'status', 'users'],
   });
   if (!gymFound) {
       throw new NotFoundException(`Gym with ID ${id} not found.`);
@@ -96,6 +97,18 @@ export class GymsService {
     return {
       message: `Gym with ID ${id} has been succesfully modified`
     }
+  }
+
+  async deactivateGym(gymId: string): Promise<{ message: string }> {        
+    const user = await this.gymsRepository.findOne({ where: { id: gymId } });
+    if (!user) {
+      throw new NotFoundException(`Gym with ID ${gymId} not found.`);
+    }
+      
+    user.status = statusGym.inactive;
+    await this.gymsRepository.save(user);
+      
+    return { message: `Gym with ID ${gymId} has been deactivated successfully.` };
   }
 
 }

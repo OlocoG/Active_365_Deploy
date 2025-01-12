@@ -2,6 +2,8 @@ import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGe
 import { v4 as uuid } from 'uuid';
 import { Categories } from "./categories.entity";
 import { OrderProduct } from "./orderProduct.entity";
+import { statusProduct } from "src/enums/status.enum";
+
 
 @Entity({ name: "Products" })
 export class Products {
@@ -26,6 +28,9 @@ export class Products {
     @ManyToOne(() => Categories, (category) => category.product)
     @JoinColumn()
     category: Categories;
+
+    @Column({ type: "varchar", length: 10, nullable: false, default: statusProduct.active })
+    status: statusProduct;
 
     @OneToMany(() => OrderProduct, (orderProduct) => orderProduct.product)
     orderProducts: OrderProduct[];
