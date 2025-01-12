@@ -2,7 +2,8 @@ import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGe
 import { v4 as uuid } from 'uuid';
 import { Categories } from "./categories.entity";
 import { OrderProduct } from "./orderProduct.entity";
-import { statusProduct } from "src/enums/statusProducts.enum";
+import { statusProduct } from "src/enums/status.enum";
+
 
 @Entity({ name: "Products" })
 export class Products {

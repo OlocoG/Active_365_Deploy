@@ -6,7 +6,8 @@ import * as usersSeed from '../seeders/users.seeder.json';
 import * as bcrypt from 'bcrypt';
 import { Gyms } from 'src/entities/gyms.entity';
 import { GymsService } from 'src/gyms/gyms.service';
-import { statusUser } from 'src/enums/statusUsers.enum';
+import { statusUser } from 'src/enums/status.enum';
+
 @Injectable()
 export class UserService {
     constructor(@InjectRepository(Users) private readonly userRepository: Repository<Users>,

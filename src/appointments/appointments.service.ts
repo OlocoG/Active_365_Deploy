@@ -5,8 +5,8 @@ import { Classes } from 'src/entities/class.entity';
 import { Users } from 'src/entities/users.entity';
 import { DataSource, Repository } from 'typeorm';
 import { isBefore, subHours, parseISO } from 'date-fns';
-import { statusAppointment } from 'src/enums/statusAppointments.enum';
 import { EmailService } from 'src/email/email.service';
+import { statusAppointment } from 'src/enums/status.enum';
 
 @Injectable()
 export class AppointmentsService {

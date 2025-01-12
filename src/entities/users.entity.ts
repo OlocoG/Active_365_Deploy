@@ -5,7 +5,7 @@ import { Gyms } from "./gyms.entity";
 import { Orders } from "./orders.entity";
 import { userRoles } from "src/enums/userRoles.enum";
 import { Appointments } from "./appointments.entity";
-import { statusUser } from "src/enums/statusUsers.enum";
+import { statusUser } from "src/enums/status.enum";
 @Entity({name: "Users"})
 export class Users {
     @PrimaryGeneratedColumn('uuid')

@@ -6,7 +6,7 @@ import { Products } from 'src/entities/products.entity';
 import { Repository } from 'typeorm';
 import { FilesUploadService } from 'src/files-upload/files-upload.service';
 import { FilterProductsDto } from 'src/dto/createProduct.dto';
-import { statusProduct } from 'src/enums/statusProducts.enum';
+import { statusProduct } from 'src/enums/status.enum';
 
 
 @Injectable()
