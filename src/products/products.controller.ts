@@ -48,5 +48,10 @@ export class ProductsController {
   @Get('category/:categoryId')
   getProductsByCategory(@Param('categoryId') categoryId: string) {
   return this.productsService.getProductsByCategory(categoryId);
-}
+  }
+
+  @Put('/deactivate/:id')
+  async cancelAppointment(@Param('id') productId: string) {
+    return await this.productsService.deactivateProduct(productId);
+  }
 }
