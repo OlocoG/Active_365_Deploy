@@ -51,7 +51,7 @@ export class ProductsController {
   }
 
   @Put('/deactivate/:id')
-  async cancelAppointment(@Param('id') productId: string) {
-    return await this.productsService.deactivateProduct(productId);
+  cancelAppointment(@Param('id') productId: string) {
+    return this.productsService.deactivateProduct(productId);
   }
 }
