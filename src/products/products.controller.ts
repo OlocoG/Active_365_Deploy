@@ -4,6 +4,7 @@ import { Products } from 'src/entities/products.entity';
 import { CreateProductDto } from 'src/dto/createProduct.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateImagesPipe } from 'src/files-upload/file-validation.pipe';
+import { ProductReviewDto } from 'src/dto/create-review.dto';
 
 
 
@@ -33,6 +34,11 @@ export class ProductsController {
     @UploadedFile(ValidateImagesPipe) file?: Express.Multer.File,
   ){
     return this.productsService.createProduct(product, file);
+  }
+
+  @Post('review')
+  addReview( @Body() review: ProductReviewDto){
+    return this.productsService.addReview(review);
   }
 
   @Put(':id')

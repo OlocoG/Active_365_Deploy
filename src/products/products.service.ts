@@ -6,6 +6,10 @@ import { Products } from 'src/entities/products.entity';
 import { Repository } from 'typeorm';
 import { FilesUploadService } from 'src/files-upload/files-upload.service';
 import { FilterProductsDto } from 'src/dto/createProduct.dto';
+import { Reviews } from 'src/entities/reviews.entity';
+import { Users } from 'src/entities/users.entity';
+import { plainToInstance } from 'class-transformer';
+import { ProductReviewDto } from 'src/dto/create-review.dto';
 
 
 @Injectable()
@@ -16,6 +20,10 @@ export class ProductsService {
     private productsRepository: Repository<Products>,
     @InjectRepository(Categories)
     private categoriesRepository: Repository<Categories>,
+    @InjectRepository(Users) 
+    private usersRepository: Repository<Users>,
+    @InjectRepository(Reviews) 
+    private reviewsRepository: Repository<Reviews>,
     private readonly filesUploadService: FilesUploadService,
 ) {}
 
@@ -86,8 +94,8 @@ export class ProductsService {
         
     const product = await this.productsRepository.findOne({
         where: { id: id },
-        relations: ['category'],
-        select: ['id', 'name', 'description', 'price', 'stock', 'imgUrl', 'category', 'subcategory']
+        relations: ['category', 'reviews'],
+        select: ['id', 'name', 'description', 'price', 'stock', 'imgUrl', 'category', 'subcategory', 'reviews']
     });
     if (!product) {
         throw new NotFoundException(`Product with ID ${id} not found..`);
@@ -156,6 +164,31 @@ export class ProductsService {
       throw new NotFoundException(`No products found for category with ID ${categoryId}.`);
     }
     return products;
+  }
+  async addReview( review: ProductReviewDto) {
+    const product = await this.productsRepository.findOneBy({ id: review.productId });
+    if (!product) {
+      throw new NotFoundException(`Product with ID ${review.productId} not found.`);
+    }
+    const user = await this.usersRepository.findOneBy({ id: review.userId });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${review.userId} not found.`);
+    }
+    const newReview = new Reviews();
+    newReview.productId = product;
+    newReview.userId = user;
+    newReview.rating = review.rating;
+    newReview.comment = review.comment;
+
+    await this.reviewsRepository.save(newReview);
+
+    product.reviews.push(newReview);
+
+    const updatedProduct = await this.productsRepository.save(product);
+
+    return {
+      message: `Review added to product with ID ${review.productId}`,
+    };
   }
 
   async getRandomProducts(limit: number): Promise<Products[]> {

@@ -10,7 +10,6 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    
     @Rol(userRoles.admin)
     @UseGuards(AuthorizationGuard, RolesGuard)
     @Get()

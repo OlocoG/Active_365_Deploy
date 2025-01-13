@@ -20,7 +20,7 @@ export class UserService {
       }
 
       async getUserById(id: string) {
-        const user = await this.userRepository.findOne({where: {id}});
+        const user = await this.userRepository.findOne({where: {id}, relations: ['gym', 'reviews']});
         if(!user) throw new NotFoundException(`El usuario con el id ${id} no existe`);
         return user;
       }

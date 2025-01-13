@@ -5,11 +5,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Products } from 'src/entities/products.entity';
 import { Categories } from 'src/entities/categories.entity';
 import { FilesUploadModule } from 'src/files-upload/files-upload.module';
+import { Type } from 'class-transformer';
+import { Users } from 'src/entities/users.entity';
+import { Reviews } from 'src/entities/reviews.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Categories]),
     TypeOrmModule.forFeature([Products]),
+    TypeOrmModule.forFeature([Users]),
+    TypeOrmModule.forFeature([Reviews]),
     FilesUploadModule
   ],
   controllers: [ProductsController],
