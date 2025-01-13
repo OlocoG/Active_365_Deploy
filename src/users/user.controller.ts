@@ -36,4 +36,9 @@ export class UserController {
       return this.userService.deactivateUser(userId);
     }
 
+    @Put('/setadmin/:id')
+    setAdmin(@Param('id') userId: string) {
+      return this.userService.setAdmin(userId);
+    }
+
 }
