@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { Gyms } from 'src/entities/gyms.entity';
 import { GymsService } from 'src/gyms/gyms.service';
 import { statusUser } from 'src/enums/status.enum';
+import { userRoles } from 'src/enums/userRoles.enum';
 
 @Injectable()
 export class UserService {
@@ -97,4 +98,16 @@ export class UserService {
       return { message: `User with ID ${userId} has been deactivated successfully.` };
     }
 
+    async setAdmin(userId: string): Promise<{ message: string }> {
+        
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+          throw new NotFoundException(`User with ID ${userId} not found.`);
+      }
+    
+      user.rol = userRoles.admin;
+      await this.userRepository.save(user);
+    
+      return { message: `Now the user with ID ${userId} is an Admin.` };
+    }
 }
