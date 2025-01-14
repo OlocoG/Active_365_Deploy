@@ -11,7 +11,6 @@ export class NotificationsService {
     ){}
 
     @Cron('0 0 1 * *')
-    // @Cron('*/1 * * * *') 
     async sendMonthlyOffers() {
 
         const page = 1; 
