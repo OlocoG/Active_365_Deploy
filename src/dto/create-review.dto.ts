@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsUUID, IsInt, Min, IsString, Max, IsPositive } from "class-validator";
+import { IsUUID, IsInt, Min, IsString, Max, IsPositive, IsNumber } from "class-validator";
 
 export class ProductReviewDto {
     @IsUUID()
@@ -11,7 +11,7 @@ export class ProductReviewDto {
     @IsUUID()
     userId: string;
 
-    @IsInt()
+    @IsNumber()
     @Min(0)
     @Max(5)
     @ApiProperty()

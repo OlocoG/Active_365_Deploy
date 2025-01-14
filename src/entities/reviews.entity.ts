@@ -9,7 +9,7 @@ export class Reviews {
     id: string = uuid();
 
     @Column({ type: 'decimal', precision: 10, scale: 2 })
-    rating: number;
+    rating: number
 
     @Column({type: 'text'})
     comment: string;
