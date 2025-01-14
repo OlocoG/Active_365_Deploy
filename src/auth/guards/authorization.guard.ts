@@ -14,7 +14,7 @@ export class AuthorizationGuard implements CanActivate {
 
         try{
             const secret = process.env.JWT_SECRET;
-            const user = this.jwtService.verify(token, {secret}); //{id,email,rol}
+            const user = this.jwtService.verify(token, {secret});
             
             user.exp = new Date(user.exp * 1000);
             user.iat = new Date(user.iat * 1000);

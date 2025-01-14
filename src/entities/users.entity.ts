@@ -5,7 +5,8 @@ import { Gyms } from "./gyms.entity";
 import { Orders } from "./orders.entity";
 import { userRoles } from "src/enums/userRoles.enum";
 import { Appointments } from "./appointments.entity";
-import { statusUser } from "src/enums/status.enum";
+import { ReviewsProducts } from "./reviewsProducts.entity";
+import { ReviewsGyms } from "./reviewsGyms.entity";
 @Entity({name: "Users"})
 export class Users {
     @PrimaryGeneratedColumn('uuid')
@@ -22,15 +23,12 @@ export class Users {
 
     @Column({ type: 'text', nullable: true })
     address?: string;
-
+  
     @Column({ length: 50, nullable: true })
     city?: string;
     
     @Column({type: 'varchar', length: 15, nullable: false, default: userRoles.registered})
     rol: string;
-
-    @Column({ type: "varchar", length: 10, nullable: false, default: statusUser.active })
-    status: statusUser;
     
     @Column({ type: 'float', nullable: true })
     height?: number;
@@ -49,13 +47,21 @@ export class Users {
     
     @ManyToOne(() => Gyms, gym => gym.users)
     @JoinColumn()
-    gym: Gyms
+    gym: Gyms;
 
     @OneToMany(() => Appointments, appointment => appointment.user )
     @JoinColumn()
-    appointments: Appointments[]
+    appointments: Appointments[];
 
     @OneToMany(() => Orders, order => order.user)
     @JoinColumn()
-    orders: Orders[]
+    orders: Orders[];
+
+    @OneToMany(() => ReviewsProducts, (review) => review.userId)
+    @JoinColumn()
+    reviews: ReviewsProducts[];
+
+    @OneToMany(() => ReviewsGyms, (review) => review.userId)
+    @JoinColumn()
+    reviewsGyms: ReviewsGyms[];
 }

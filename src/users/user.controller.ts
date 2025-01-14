@@ -10,7 +10,6 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    
     @Rol(userRoles.admin)
     @UseGuards(AuthorizationGuard, RolesGuard)
     @Get()
@@ -30,15 +29,5 @@ export class UserController {
     updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() user: Partial<Users>) {
         return this.userService.updateUser(id, user);
       }
-
-    @Put('/deactivate/:id')
-    cancelAppointment(@Param('id') userId: string) {
-      return this.userService.deactivateUser(userId);
-    }
-
-    @Put('/setadmin/:id')
-    setAdmin(@Param('id') userId: string) {
-      return this.userService.setAdmin(userId);
-    }
 
 }

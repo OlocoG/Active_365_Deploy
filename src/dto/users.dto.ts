@@ -15,12 +15,10 @@ export class CreateUserDto  {
     @ApiProperty()
     email: string;
 
-    //@IsNotEmpty()
     @IsNumber()
     @ApiProperty()
     phone?: number;
 
-    //@IsNotEmpty()
     @IsString()
     @MinLength(3)
     @MaxLength(80)

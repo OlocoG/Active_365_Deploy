@@ -43,14 +43,4 @@ export class CreateGymDto {
     @ApiProperty()
     city: string;
 
-    // @IsNotEmpty()
-    // @IsNumber()
-    // @ApiProperty()
-    // latitude: number;
-
-    // @IsNotEmpty()
-    // @IsNumber()
-    // @ApiProperty()
-    // longitude: number;
-
 }
