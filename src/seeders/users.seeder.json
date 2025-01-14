@@ -8,7 +8,7 @@
       "rol": "registered",
       "height": 1.75,
       "weight": 70.5,
-      "password": "contraseña123"
+      "password": "contrAseña123!"
     },
     {
       "name": "María Rodríguez",
@@ -30,6 +30,6 @@
       "rol": "registered",
       "height": 1.80,
       "weight": 80.1,
-      "password": "contraseña789"
+      "password": "Contraseña789!"
     }
   ]

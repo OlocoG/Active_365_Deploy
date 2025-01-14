@@ -16,9 +16,9 @@ export class AuthGymsController {
     return this.authGymsService.createGym(gym);
   }
 
-    @Get('google/login')
-    @UseGuards(GoogleGymAuthGuard)
-    googleLogin() {}
+  @Get('google/login')
+  @UseGuards(GoogleGymAuthGuard)
+  googleLogin() {}
 
   @Get('google/callback')
   @UseGuards(GoogleGymAuthGuard)

@@ -1,8 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { GymsService } from './gyms.service';
 import { CreateGymDto } from '../dto/create-gym.dto';
 import { ProductReviewDto } from 'src/dto/review-product.dto';
 import { GymReviewDto } from 'src/dto/review-gym.dto';
+import { Rol } from 'src/decorators/roles.decorator';
+import { userRoles } from 'src/enums/userRoles.enum';
+import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('gyms')
 export class GymsController {
@@ -14,6 +18,8 @@ export class GymsController {
   }
 
   @Post('review')
+  @Rol(userRoles.member)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   addReview(@Body() review: GymReviewDto){
     return this.gymsService.addReview(review);
   }
@@ -23,17 +29,23 @@ export class GymsController {
   }
 
   @Get(':id')
+  @Rol(userRoles.member, userRoles.admin)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   findByClass(@Param('class') Class: string) {
     return this.gymsService.getByClass(Class);
   }
 
   @Put(':id')
+  @Rol(userRoles.admin, userRoles.partner)
+  @UseGuards(AuthorizationGuard, RolesGuard)
     updateGym(@Param('id', ParseUUIDPipe) id:string, @Body() gym: CreateGymDto){
         return this.gymsService.updateGym(id, gym)
   }
 
   @Put('/deactivate/:id')
-    cancelAppointment(@Param('id') gymId: string) {
-      return this.gymsService.deactivateGym(gymId);
+  @Rol(userRoles.admin)
+  @UseGuards(AuthorizationGuard, RolesGuard)
+  cancelGym(@Param('id') gymId: string) {
+    return this.gymsService.deactivateGym(gymId);
   }
 }
