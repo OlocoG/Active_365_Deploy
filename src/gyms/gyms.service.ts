@@ -4,6 +4,7 @@ import { Gyms } from 'src/entities/gyms.entity';
 import { Repository } from 'typeorm';
 import * as data from '../seeders/gyms.json'
 import * as bcrypt from 'bcrypt'
+import { statusGym } from 'src/enums/status.enum';
 import { Users } from 'src/entities/users.entity';
 import { GymReviewDto } from 'src/dto/review-gym.dto';
 import { ReviewsGyms } from 'src/entities/reviewsGyms.entity';
@@ -51,7 +52,7 @@ export class GymsService {
   async getGyms() {
     const gyms = await this.gymsRepository.find({
       relations: ['users', 'classes'],
-      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt', 'users'],
+      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt', 'users', 'status'],
     });
     if(gyms.length === 0) {
       throw new NotFoundException('No gyms registered in the database were found');
@@ -63,7 +64,7 @@ export class GymsService {
     const gymFound = await this.gymsRepository.findOne({
       where: { id: id },
       relations: ['users', 'classes', 'reviews'],
-      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt', 'users', 'classes', 'reviews'],
+      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt', 'users', 'classes', 'reviews', 'status'],
   });
   if (!gymFound) {
       throw new NotFoundException(`Gym with ID ${id} not found.`);
@@ -82,7 +83,7 @@ return gymFound;
       where: {
         classes: {id: classId},
       },
-      select: ['id', 'name', 'email', 'phone', 'address', 'classes']
+      select: ['id', 'name', 'email', 'phone', 'address', 'classes', 'status']
     });
 
     if (!gyms || gyms.length === 0) {
@@ -108,6 +109,18 @@ return gymFound;
     return {
       message: `Gym with ID ${id} has been succesfully modified`
     }
+  }
+
+  async deactivateGym(gymId: string): Promise<{ message: string }> {        
+    const gym = await this.gymsRepository.findOne({ where: { id: gymId } });
+    if (!gym) {
+      throw new NotFoundException(`Gym with ID ${gymId} not found.`);
+    }
+      
+    gym.status = statusGym.inactive;
+    await this.gymsRepository.save(gym);
+      
+    return { message: `Gym with ID ${gymId} has been deactivated successfully.` };
   }
 
   async addReview(review: GymReviewDto) {

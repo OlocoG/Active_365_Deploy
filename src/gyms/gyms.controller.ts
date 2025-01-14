@@ -30,5 +30,10 @@ export class GymsController {
   @Put(':id')
     updateGym(@Param('id', ParseUUIDPipe) id:string, @Body() gym: CreateGymDto){
         return this.gymsService.updateGym(id, gym)
-    }
+  }
+
+  @Put('/deactivate/:id')
+    cancelAppointment(@Param('id') gymId: string) {
+      return this.gymsService.deactivateGym(gymId);
+  }
 }
