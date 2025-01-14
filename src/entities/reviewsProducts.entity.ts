@@ -3,8 +3,8 @@ import { Users } from "./users.entity";
 import { Products } from "./products.entity";
 import { Exclude } from "class-transformer";
 import { v4 as uuid } from 'uuid';
-@Entity({name: 'Reviews'})
-export class Reviews {
+@Entity({name: 'ReviewsProducts'})
+export class ReviewsProducts {
     @PrimaryGeneratedColumn('uuid')
     id: string = uuid();
 

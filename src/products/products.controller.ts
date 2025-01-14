@@ -4,7 +4,7 @@ import { Products } from 'src/entities/products.entity';
 import { CreateProductDto } from 'src/dto/createProduct.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateImagesPipe } from 'src/files-upload/file-validation.pipe';
-import { ProductReviewDto } from 'src/dto/create-review.dto';
+import { ProductReviewDto } from 'src/dto/review-product.dto';
 
 
 

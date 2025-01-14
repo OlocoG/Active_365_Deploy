@@ -7,14 +7,14 @@ import { Categories } from 'src/entities/categories.entity';
 import { FilesUploadModule } from 'src/files-upload/files-upload.module';
 import { Type } from 'class-transformer';
 import { Users } from 'src/entities/users.entity';
-import { Reviews } from 'src/entities/reviews.entity';
+import { ReviewsProducts } from 'src/entities/reviewsProducts.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Categories]),
     TypeOrmModule.forFeature([Products]),
     TypeOrmModule.forFeature([Users]),
-    TypeOrmModule.forFeature([Reviews]),
+    TypeOrmModule.forFeature([ReviewsProducts]),
     FilesUploadModule
   ],
   controllers: [ProductsController],

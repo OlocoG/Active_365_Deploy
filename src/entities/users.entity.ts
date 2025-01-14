@@ -5,7 +5,8 @@ import { Gyms } from "./gyms.entity";
 import { Orders } from "./orders.entity";
 import { userRoles } from "src/enums/userRoles.enum";
 import { Appointments } from "./appointments.entity";
-import { Reviews } from "./reviews.entity";
+import { ReviewsProducts } from "./reviewsProducts.entity";
+import { ReviewsGyms } from "./reviewsGyms.entity";
 @Entity({name: "Users"})
 export class Users {
     @PrimaryGeneratedColumn('uuid')
@@ -56,7 +57,11 @@ export class Users {
     @JoinColumn()
     orders: Orders[];
 
-    @OneToMany(() => Reviews, (review) => review.userId)
+    @OneToMany(() => ReviewsProducts, (review) => review.userId)
     @JoinColumn()
-    reviews: Reviews[];
+    reviews: ReviewsProducts[];
+
+    @OneToMany(() => ReviewsGyms, (review) => review.userId)
+    @JoinColumn()
+    reviewsGyms: ReviewsGyms[];
 }

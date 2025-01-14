@@ -6,9 +6,9 @@ import { Products } from 'src/entities/products.entity';
 import { Repository } from 'typeorm';
 import { FilesUploadService } from 'src/files-upload/files-upload.service';
 import { FilterProductsDto } from 'src/dto/createProduct.dto';
-import { Reviews } from 'src/entities/reviews.entity';
+import { ReviewsProducts } from 'src/entities/reviewsProducts.entity';
 import { Users } from 'src/entities/users.entity';
-import { ProductReviewDto } from 'src/dto/create-review.dto';
+import { ProductReviewDto } from 'src/dto/review-product.dto';
 import { parse } from 'path';
 
 
@@ -22,8 +22,8 @@ export class ProductsService {
     private categoriesRepository: Repository<Categories>,
     @InjectRepository(Users) 
     private usersRepository: Repository<Users>,
-    @InjectRepository(Reviews) 
-    private reviewsRepository: Repository<Reviews>,
+    @InjectRepository(ReviewsProducts) 
+    private reviewsRepository: Repository<ReviewsProducts>,
     private readonly filesUploadService: FilesUploadService,
 ) {}
 
@@ -91,7 +91,6 @@ export class ProductsService {
       throw new NotFoundException('No products were found matching the criteria.');
     }
   
-    // Map raw results to include calculated rating
     const mappedProducts = products.map(product => ({
       id: product.product_id,
       name: product.product_name,
@@ -121,7 +120,6 @@ export class ProductsService {
         throw new NotFoundException(`Product with ID ${id} not found..`);
     }
 
-    // Convert rating to number if it appears as a string
     product.reviews = product.reviews.map(review => ({
         ...review,
         rating: typeof review.rating === 'string' ? parseFloat(review.rating) : review.rating
@@ -229,7 +227,7 @@ export class ProductsService {
           message: `Review update done.`,
       };
     } else {
-        const newReview = new Reviews();
+        const newReview = new ReviewsProducts();
         newReview.productId = product;
         newReview.userId = user;
         newReview.rating = review.rating;
@@ -242,8 +240,6 @@ export class ProductsService {
             message: `Review done.`,
         }
     }
-
-    
 }
 
 

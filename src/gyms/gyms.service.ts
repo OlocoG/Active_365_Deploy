@@ -1,9 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Gyms } from 'src/entities/gyms.entity';
 import { Repository } from 'typeorm';
 import * as data from '../seeders/gyms.json'
 import * as bcrypt from 'bcrypt'
+import { Users } from 'src/entities/users.entity';
+import { GymReviewDto } from 'src/dto/review-gym.dto';
+import { ReviewsGyms } from 'src/entities/reviewsGyms.entity';
 
 
 @Injectable()
@@ -11,7 +14,11 @@ export class GymsService {
   
   constructor(
     @InjectRepository(Gyms)
-    private gymsRepository: Repository<Gyms>
+    private gymsRepository: Repository<Gyms>,
+    @InjectRepository(Users)
+    private usersRepository: Repository<Users>,
+    @InjectRepository(ReviewsGyms)
+    private reviewsRepository: Repository<ReviewsGyms>,
   ) {}
 
   async addGyms() {
@@ -55,13 +62,18 @@ export class GymsService {
   async getById(id: string) {
     const gymFound = await this.gymsRepository.findOne({
       where: { id: id },
-      relations: ['users', 'classes'],
-      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt'],
+      relations: ['users', 'classes', 'reviews'],
+      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt', 'users', 'classes', 'reviews'],
   });
   if (!gymFound) {
       throw new NotFoundException(`Gym with ID ${id} not found.`);
   }
-  return gymFound;
+  gymFound.reviews = gymFound.reviews.map(review => ({
+    ...review,
+    rating: typeof review.rating === 'string' ? parseFloat(review.rating) : review.rating
+}));
+
+return gymFound;
   }
   
   async getByClass(classId: string) {
@@ -96,6 +108,52 @@ export class GymsService {
     return {
       message: `Gym with ID ${id} has been succesfully modified`
     }
+  }
+
+  async addReview(review: GymReviewDto) {
+      const gym = await this.gymsRepository.findOne({
+          where: { id: review.gymId },
+          relations: ['reviews', 'reviews.userId']
+      });
+      if (!gym) {
+          throw new NotFoundException(`Gym with ID ${review.gymId} not found.`);
+      }
+  
+      const user = await this.usersRepository.findOne({
+          where: { id: review.userId },
+          relations: ['gym', 'gym.reviews']
+      });
+      if (!user) {
+          throw new NotFoundException(`User with ID ${review.userId} not found.`);
+      }
+  
+      const hasMembership = user.gym && user.gym.id === review.gymId;
+      if (!hasMembership) {
+          throw new ForbiddenException(`The user has not have a membership on this gym`);
+      }
+      const existingReview = gym.reviews.find(rev => rev.userId.id === review.userId);
+  
+      if (existingReview) {
+          existingReview.rating = review.rating;
+          existingReview.comment = review.comment;
+          await this.reviewsRepository.save(existingReview);
+          return {
+            message: `Review update done.`,
+        };
+      } else {
+          const newReview = new ReviewsGyms();
+          newReview.gymId = gym;
+          newReview.userId = user;
+          newReview.rating = review.rating;
+          newReview.comment = review.comment;
+          await this.reviewsRepository.save(newReview);
+  
+          gym.reviews.push(newReview);
+          await this.gymsRepository.save(gym);
+          return {
+              message: `Review done.`,
+          }
+      }
   }
 
 }

@@ -9,6 +9,7 @@ import {
   import { Users } from './users.entity';
   import { Classes } from './class.entity';
   import { userRoles } from 'src/enums/userRoles.enum';
+import { ReviewsGyms } from './reviewsGyms.entity';
   
   @Entity({ name: 'Gyms' })
   export class Gyms {
@@ -53,5 +54,8 @@ import {
   
     @OneToMany(() => Users, (user) => user.gym)
     users: Users[];
+
+    @OneToMany(() => ReviewsGyms, (reviews) => reviews.gymId, {eager: true})
+    reviews: ReviewsGyms[];
   }
   
