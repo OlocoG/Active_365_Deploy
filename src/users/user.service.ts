@@ -9,11 +9,14 @@ import { GymsService } from 'src/gyms/gyms.service';
 import { ReviewsGyms } from 'src/entities/reviewsGyms.entity';
 import { statusUser } from 'src/enums/status.enum';
 import { userRoles } from 'src/enums/userRoles.enum';
+import { FilesUploadService } from 'src/files-upload/files-upload.service';
 @Injectable()
 export class UserService {
     constructor(@InjectRepository(Users) private readonly userRepository: Repository<Users>,
                 @InjectRepository(Gyms) private readonly gymsRepository: Repository<Gyms>,
-                @InjectRepository(ReviewsGyms) private readonly reviewsRepository: Repository<ReviewsGyms>) {}
+                @InjectRepository(ReviewsGyms) private readonly reviewsRepository: Repository<ReviewsGyms>,
+                private readonly filesUploadService: FilesUploadService
+              ) {}
 
     async getAllUsers(page: number, limit: number) {
         const users =  await this.userRepository.find();
@@ -24,29 +27,36 @@ export class UserService {
       }
 
       async getUserById(id: string) {
-        const user = await this.userRepository.findOne({where: {id}, relations: ['gym', 'reviews']});
+        const user = await this.userRepository.findOne({where: {id}, relations: ['gym', 'reviews', 'appointments']});
         if(!user) throw new NotFoundException(`El usuario con el id ${id} no existe`);
         return user;
       }
 
-      async updateUser(id: string, user: Partial<Users>) {
+      async updateUser(id: string, user: Partial<Users>, file?:Express.Multer.File) {
         const userFound = await this.userRepository.findOne({where: {id}});
         if(!userFound) throw new NotFoundException(`El usuario con el id ${id} no existe`);
-        await this.userRepository.update(id, user);
+
+        if (file) {
+          const uploadImage = await this.filesUploadService.uploadImage(file);
+          userFound.imgUrl = uploadImage.secure_url;
+        }
+
+        Object.assign(userFound, user);
+        await this.userRepository.save(userFound);
         return `El usuario con el id ${id} ha sido actualizado`;
       }
 
       private async waitForGyms() {
-        const pollInterval = 500; // Intervalo de espera en milisegundos (0.5 segundos)
-        const timeout = 10000; // Tiempo máximo de espera en milisegundos (10 segundos)
+        const pollInterval = 500; 
+        const timeout = 10000; 
         let elapsedTime = 0;
     
         while (elapsedTime < timeout) {
             const gymsCount = await this.gymsRepository.count();
             if (gymsCount > 0) {
-                return; // Gimnasios encontrados, continuar con el flujo
+                return; 
             }
-            await new Promise((resolve) => setTimeout(resolve, pollInterval)); // Espera activa
+            await new Promise((resolve) => setTimeout(resolve, pollInterval)); 
             elapsedTime += pollInterval;
         }
     

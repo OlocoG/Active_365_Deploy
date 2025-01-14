@@ -1,10 +1,12 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Put, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Users } from 'src/entities/users.entity';
 import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
 import { Rol } from 'src/decorators/roles.decorator';
 import { userRoles } from 'src/enums/userRoles.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ValidateImagesPipe } from 'src/files-upload/file-validation.pipe';
 
 @Controller('users')
 export class UserController {
@@ -26,9 +28,14 @@ export class UserController {
       }
 
     @Put(':id')
-    updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() user: Partial<Users>) {
-        return this.userService.updateUser(id, user);
-      }
+    @UseInterceptors(FileInterceptor('file'))
+    updateUser(
+      @Param('id', ParseUUIDPipe) id: string, 
+      @Body() user: Partial<Users>,
+      @UploadedFile(ValidateImagesPipe) file?: Express.Multer.File
+    ) {
+        return this.userService.updateUser(id, user, file);
+    }
 
     @Put('/deactivate/:id')
     cancelAppointment(@Param('id') userId: string) {
