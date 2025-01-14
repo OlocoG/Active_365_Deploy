@@ -8,12 +8,17 @@ import {
   Put,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ClassesService } from './classes.service';
 import { CreateClassDto } from 'src/dto/create-class.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateImagesPipe } from 'src/files-upload/file-validation.pipe';
+import { Rol } from 'src/decorators/roles.decorator';
+import { userRoles } from 'src/enums/userRoles.enum';
+import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 
 @Controller('classes')
@@ -22,26 +27,36 @@ export class ClassesController {
 
   
   @Get()
+  @Rol(userRoles.member, userRoles.admin, userRoles.partner)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   getClassesByGymId(@Query('gymId') gymId: string) {
     return this.classesService.getClassesByGymId(gymId);
   }
 
   @Get('/all')
+  @Rol(userRoles.member, userRoles.admin)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   getClasses() {
     return this.classesService.getClasses();
   }
   
   @Get('/gym/:name')
+  @Rol(userRoles.member, userRoles.admin)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   getClasssesByGymName(@Param('name') name: string) {
     return this.classesService.getClassesByGymName(name);
   }
 
   @Get(':id')
+  @Rol(userRoles.member, userRoles.admin, userRoles.partner)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   getClassesById(@Param('id', ParseUUIDPipe) id: string) {
     return this.classesService.getClassesById(id);
   }
 
   @Post()
+  @Rol(userRoles.partner, userRoles.admin)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('file'))
   addClasses(
     @Body() classes: CreateClassDto,
@@ -62,6 +77,8 @@ export class ClassesController {
   }
 
   @Put(':id')
+  @Rol(userRoles.partner, userRoles.admin)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('file'))
   updateClasses(
     @Param('id', ParseUUIDPipe) id: string,
