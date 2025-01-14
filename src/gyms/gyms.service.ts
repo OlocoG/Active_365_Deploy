@@ -107,7 +107,6 @@ export class GymsService {
       
     user.status = statusGym.inactive;
     await this.gymsRepository.save(user);
-      
     return { message: `Gym with ID ${gymId} has been deactivated successfully.` };
   }
 

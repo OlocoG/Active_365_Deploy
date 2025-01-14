@@ -85,8 +85,7 @@ export class UserService {
         return 'Users added';
     }
 
-    async deactivateUser(userId: string): Promise<{ message: string }> {
-        
+    async deactivateUser(userId: string): Promise<{ message: string }> {  
       const user = await this.userRepository.findOne({ where: { id: userId } });
       if (!user) {
           throw new NotFoundException(`User with ID ${userId} not found.`);
@@ -99,7 +98,6 @@ export class UserService {
     }
 
     async setAdmin(userId: string): Promise<{ message: string }> {
-        
       const user = await this.userRepository.findOne({ where: { id: userId } });
       if (!user) {
           throw new NotFoundException(`User with ID ${userId} not found.`);

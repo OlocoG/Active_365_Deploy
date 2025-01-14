@@ -169,12 +169,10 @@ export class ProductsService {
   }
 
   async deactivateProduct(productId: string): Promise<{ message: string }> {
-    
     const product = await this.productsRepository.findOne({ where: { id: productId } });
     if (!product) {
         throw new NotFoundException(`Product with ID ${productId} not found.`);
     }
-
     product.status = statusProduct.inactive;
     await this.productsRepository.save(product);
 
