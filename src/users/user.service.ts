@@ -6,13 +6,12 @@ import * as usersSeed from '../seeders/users.seeder.json';
 import * as bcrypt from 'bcrypt';
 import { Gyms } from 'src/entities/gyms.entity';
 import { GymsService } from 'src/gyms/gyms.service';
-import { statusUser } from 'src/enums/status.enum';
-import { userRoles } from 'src/enums/userRoles.enum';
-
+import { ReviewsGyms } from 'src/entities/reviewsGyms.entity';
 @Injectable()
 export class UserService {
     constructor(@InjectRepository(Users) private readonly userRepository: Repository<Users>,
-                @InjectRepository(Gyms) private readonly gymsRepository: Repository<Gyms>) {}
+                @InjectRepository(Gyms) private readonly gymsRepository: Repository<Gyms>,
+                @InjectRepository(ReviewsGyms) private readonly reviewsRepository: Repository<ReviewsGyms>) {}
 
     async getAllUsers(page: number, limit: number) {
         const users =  await this.userRepository.find();
@@ -23,7 +22,7 @@ export class UserService {
       }
 
       async getUserById(id: string) {
-        const user = await this.userRepository.findOne({where: {id}});
+        const user = await this.userRepository.findOne({where: {id}, relations: ['gym', 'reviews']});
         if(!user) throw new NotFoundException(`El usuario con el id ${id} no existe`);
         return user;
       }
@@ -55,7 +54,7 @@ export class UserService {
         const gymsCount = await this.gymsRepository.count();
         if (gymsCount === 0) {
         console.log('No gyms found, initializing gyms...');
-        const gymsService = new GymsService(this.gymsRepository);
+        const gymsService = new GymsService(this.gymsRepository, this.userRepository, this.reviewsRepository);
         await gymsService.addGyms();
         }
         await this.waitForGyms();
@@ -85,29 +84,4 @@ export class UserService {
         return 'Users added';
     }
 
-    async deactivateUser(userId: string): Promise<{ message: string }> {
-        
-      const user = await this.userRepository.findOne({ where: { id: userId } });
-      if (!user) {
-          throw new NotFoundException(`User with ID ${userId} not found.`);
-      }
-    
-      user.status = statusUser.inactive;
-      await this.userRepository.save(user);
-    
-      return { message: `User with ID ${userId} has been deactivated successfully.` };
-    }
-
-    async setAdmin(userId: string): Promise<{ message: string }> {
-        
-      const user = await this.userRepository.findOne({ where: { id: userId } });
-      if (!user) {
-          throw new NotFoundException(`User with ID ${userId} not found.`);
-      }
-    
-      user.rol = userRoles.admin;
-      await this.userRepository.save(user);
-    
-      return { message: `Now the user with ID ${userId} is an Admin.` };
-    }
 }

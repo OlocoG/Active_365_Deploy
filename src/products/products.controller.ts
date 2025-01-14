@@ -4,6 +4,7 @@ import { Products } from 'src/entities/products.entity';
 import { CreateProductDto } from 'src/dto/createProduct.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateImagesPipe } from 'src/files-upload/file-validation.pipe';
+import { ProductReviewDto } from 'src/dto/review-product.dto';
 
 
 
@@ -35,6 +36,11 @@ export class ProductsController {
     return this.productsService.createProduct(product, file);
   }
 
+  @Post('review')
+  addReview( @Body() review: ProductReviewDto){
+    return this.productsService.addReview(review);
+  }
+
   @Put(':id')
   @UseInterceptors(FileInterceptor('file'))
   updateProduct(
@@ -48,10 +54,5 @@ export class ProductsController {
   @Get('category/:categoryId')
   getProductsByCategory(@Param('categoryId') categoryId: string) {
   return this.productsService.getProductsByCategory(categoryId);
-  }
-
-  @Put('/deactivate/:id')
-  cancelAppointment(@Param('id') productId: string) {
-    return this.productsService.deactivateProduct(productId);
-  }
+}
 }

@@ -9,7 +9,7 @@ import {
   import { Users } from './users.entity';
   import { Classes } from './class.entity';
   import { userRoles } from 'src/enums/userRoles.enum';
-import { statusGym } from 'src/enums/status.enum';
+import { ReviewsGyms } from './reviewsGyms.entity';
   
   @Entity({ name: 'Gyms' })
   export class Gyms {
@@ -45,9 +45,6 @@ import { statusGym } from 'src/enums/status.enum';
   
     @Column({ type: 'varchar', length: 15, nullable: false, default: userRoles.partner })
     rol: string;
-
-    @Column({ type: "varchar", length: 10, nullable: false, default: statusGym.active })
-    status: statusGym;
   
     @CreateDateColumn({ type: 'date', nullable: false })
     createdAt: Date;
@@ -57,5 +54,8 @@ import { statusGym } from 'src/enums/status.enum';
   
     @OneToMany(() => Users, (user) => user.gym)
     users: Users[];
+
+    @OneToMany(() => ReviewsGyms, (reviews) => reviews.gymId, {eager: true})
+    reviews: ReviewsGyms[];
   }
   

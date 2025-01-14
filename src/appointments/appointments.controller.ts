@@ -8,19 +8,19 @@ export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
 
   @Post()
-  createAppointment(
+  async createAppointment(
   @Body() createAppointmentDto: CreateAppointmentDto): Promise<Appointments> {
     const { userId, classId } = createAppointmentDto;
     return this.appointmentsService.createAppointment(userId, classId);
   }
 
   @Put('/cancel/:id')
-  cancelAppointment(@Param('id') appointmentId: string) {
-    return this.appointmentsService.cancelAppointment(appointmentId);
+  async cancelAppointment(@Param('id') appointmentId: string) {
+    return await this.appointmentsService.cancelAppointment(appointmentId);
   }
 
   @Put(':id')
-  modifyAppointment(
+  async modifyAppointment(
       @Param('id') appointmentId: string,
       @Body('newClassId') newClassId: string
   ): Promise<any> {
