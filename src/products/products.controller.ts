@@ -1,10 +1,14 @@
-import { Controller, Get, Post, Body, Param, ParseUUIDPipe, Put, UseInterceptors, UploadedFile, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, ParseUUIDPipe, Put, UseInterceptors, UploadedFile, Query, UseGuards } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Products } from 'src/entities/products.entity';
 import { CreateProductDto } from 'src/dto/createProduct.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateImagesPipe } from 'src/files-upload/file-validation.pipe';
 import { ProductReviewDto } from 'src/dto/review-product.dto';
+import { Rol } from 'src/decorators/roles.decorator';
+import { userRoles } from 'src/enums/userRoles.enum';
+import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 
 
@@ -28,6 +32,8 @@ export class ProductsController {
   }
 
   @Post()
+  @Rol(userRoles.admin, userRoles.partner)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('file'))
   createProduct(
     @Body() product: Partial<CreateProductDto>,
@@ -37,11 +43,15 @@ export class ProductsController {
   }
 
   @Post('review')
+  @Rol(userRoles.registered, userRoles.member)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   addReview( @Body() review: ProductReviewDto){
     return this.productsService.addReview(review);
   }
 
   @Put(':id')
+  @Rol(userRoles.admin, userRoles.partner)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('file'))
   updateProduct(
     @Param('id', ParseUUIDPipe) id:string, 
@@ -57,7 +67,9 @@ export class ProductsController {
   }
 
   @Put('/deactivate/:id')
-  cancelAppointment(@Param('id') productId: string) {
+  @Rol(userRoles.admin, userRoles.partner)
+  @UseGuards(AuthorizationGuard, RolesGuard)
+  desactivateProduct(@Param('id') productId: string) {
     return this.productsService.deactivateProduct(productId);
   }
 }
