@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from 'src/dto/create-order.dto';
 
@@ -10,11 +10,17 @@ export class OrdersController {
   getOrder(@Param('id', ParseUUIDPipe) id:string){
     return this.ordersService.getOrder(id);
   }
-
+  
+  // @Put(':id')
+  // updateOrder(@Param('id', ParseUUIDPipe) id:string, @Body() order: CreateOrderDto) {
+  //   const { userId, products } = order;
+  //   return this.ordersService.updateOrder(id, userId, products);
+  // }
+  
   @Post()
   createOrder(@Body() order: CreateOrderDto) {
       const { userId, products } = order;
       return this.ordersService.createOrder(userId, products);
   }
-  
+
 }
