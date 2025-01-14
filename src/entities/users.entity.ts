@@ -7,6 +7,7 @@ import { userRoles } from "src/enums/userRoles.enum";
 import { Appointments } from "./appointments.entity";
 import { ReviewsProducts } from "./reviewsProducts.entity";
 import { ReviewsGyms } from "./reviewsGyms.entity";
+import { statusUser } from "src/enums/status.enum";
 @Entity({name: "Users"})
 export class Users {
     @PrimaryGeneratedColumn('uuid')
@@ -29,6 +30,9 @@ export class Users {
     
     @Column({type: 'varchar', length: 15, nullable: false, default: userRoles.registered})
     rol: string;
+
+    @Column({ type: "varchar", length: 10, nullable: false, default: statusUser.active })
+    status: statusUser;
     
     @Column({ type: 'float', nullable: true })
     height?: number;

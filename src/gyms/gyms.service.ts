@@ -52,7 +52,7 @@ export class GymsService {
   async getGyms() {
     const gyms = await this.gymsRepository.find({
       relations: ['users', 'classes'],
-      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt', 'users'],
+      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt', 'users', 'status'],
     });
     if(gyms.length === 0) {
       throw new NotFoundException('No gyms registered in the database were found');
@@ -64,7 +64,7 @@ export class GymsService {
     const gymFound = await this.gymsRepository.findOne({
       where: { id: id },
       relations: ['users', 'classes', 'reviews'],
-      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt', 'users', 'classes', 'reviews'],
+      select: ['id', 'name', 'email', 'phone' ,'address', 'city', 'latitude', 'longitude', 'rol', 'createdAt', 'users', 'classes', 'reviews', 'status'],
   });
   if (!gymFound) {
       throw new NotFoundException(`Gym with ID ${id} not found.`);
@@ -83,7 +83,7 @@ return gymFound;
       where: {
         classes: {id: classId},
       },
-      select: ['id', 'name', 'email', 'phone', 'address', 'classes']
+      select: ['id', 'name', 'email', 'phone', 'address', 'classes', 'status']
     });
 
     if (!gyms || gyms.length === 0) {
@@ -112,13 +112,13 @@ return gymFound;
   }
 
   async deactivateGym(gymId: string): Promise<{ message: string }> {        
-    const user = await this.gymsRepository.findOne({ where: { id: gymId } });
-    if (!user) {
+    const gym = await this.gymsRepository.findOne({ where: { id: gymId } });
+    if (!gym) {
       throw new NotFoundException(`Gym with ID ${gymId} not found.`);
     }
       
-    user.status = statusGym.inactive;
-    await this.gymsRepository.save(user);
+    gym.status = statusGym.inactive;
+    await this.gymsRepository.save(gym);
       
     return { message: `Gym with ID ${gymId} has been deactivated successfully.` };
   }

@@ -10,6 +10,7 @@ import { ReviewsProducts } from 'src/entities/reviewsProducts.entity';
 import { Users } from 'src/entities/users.entity';
 import { ProductReviewDto } from 'src/dto/review-product.dto';
 import { parse } from 'path';
+import { statusProduct } from 'src/enums/status.enum';
 
 
 @Injectable()
@@ -82,6 +83,7 @@ export class ProductsService {
       'product.imgUrl',
       'product.subcategory',
       'category.name',
+      'product.status',
       'AVG(reviews.rating) as rating',
     ]);
   
@@ -100,6 +102,7 @@ export class ProductsService {
       imgUrl: product.product_imgUrl,
       subcategory: product.product_subcategory,
       category: { name: product.category_name },
+      status: product.product_status,
       rating: parseFloat(parseFloat(product.rating).toFixed(2)),
     }));
   
@@ -112,7 +115,7 @@ export class ProductsService {
         where: { id: id },
         relations: ['category', 'reviews'],
         select: [
-            'id', 'name', 'description', 'price', 'stock', 'imgUrl', 'category', 'subcategory', 'reviews'
+            'id', 'name', 'description', 'price', 'stock', 'imgUrl', 'category', 'subcategory', 'reviews', 'status'
         ]
     });
 
@@ -184,7 +187,7 @@ export class ProductsService {
     const products = await this.productsRepository.find({
       where: { category: { id: categoryId } },
       relations: ['category'],
-      select: ['id', 'name', 'description', 'price', 'stock', 'imgUrl', 'category', 'subcategory']
+      select: ['id', 'name', 'description', 'price', 'stock', 'imgUrl', 'category', 'subcategory', 'status']
     });
   
     if (products.length === 0) {
@@ -241,8 +244,6 @@ export class ProductsService {
         }
     }
 }
-
-
 
   async getRandomProducts(limit: number): Promise<Products[]> {
     return this.productsRepository

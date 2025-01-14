@@ -10,6 +10,7 @@ import {
   import { Classes } from './class.entity';
   import { userRoles } from 'src/enums/userRoles.enum';
 import { ReviewsGyms } from './reviewsGyms.entity';
+import { statusGym } from 'src/enums/status.enum';
   
   @Entity({ name: 'Gyms' })
   export class Gyms {
@@ -45,6 +46,9 @@ import { ReviewsGyms } from './reviewsGyms.entity';
   
     @Column({ type: 'varchar', length: 15, nullable: false, default: userRoles.partner })
     rol: string;
+
+    @Column({ type: "varchar", length: 10, nullable: false, default: statusGym.active })
+    status: statusGym;
   
     @CreateDateColumn({ type: 'date', nullable: false })
     createdAt: Date;

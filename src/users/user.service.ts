@@ -7,6 +7,8 @@ import * as bcrypt from 'bcrypt';
 import { Gyms } from 'src/entities/gyms.entity';
 import { GymsService } from 'src/gyms/gyms.service';
 import { ReviewsGyms } from 'src/entities/reviewsGyms.entity';
+import { statusUser } from 'src/enums/status.enum';
+import { userRoles } from 'src/enums/userRoles.enum';
 @Injectable()
 export class UserService {
     constructor(@InjectRepository(Users) private readonly userRepository: Repository<Users>,
