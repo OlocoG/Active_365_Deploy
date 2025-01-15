@@ -1,8 +1,8 @@
-import { statusAppointment } from 'src/enums/statusAppointments.enum';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { v4 as uuid } from 'uuid';
 import { Classes } from "./class.entity";
 import { Users } from "./users.entity";
+import { statusAppointment } from "src/enums/status.enum";
 @Entity({name: 'Appointments'})
 export class Appointments {
     @PrimaryGeneratedColumn('uuid')

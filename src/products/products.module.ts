@@ -25,6 +25,6 @@ export class ProductsModule implements OnModuleInit{
   constructor(private readonly productsService: ProductsService) {}
 
   async onModuleInit() {
-    await this.productsService.addProducts();
+    // await this.productsService.addProducts();
   }
 }

@@ -18,12 +18,13 @@ import { EmailModule } from './email/email.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppointmentsModule } from './appointments/appointments.module';
+import { MembershipModule } from './membership/membership.module';
 @Module({
   imports: [
     CategoriesModule,
     GymsModule,
-    ProductsModule,
     UserModule,
+    ProductsModule,
     OrdersModule,
     ConfigModule.forRoot({
     isGlobal: true,
@@ -45,7 +46,8 @@ import { AppointmentsModule } from './appointments/appointments.module';
   StripeModule,
   EmailModule,
   NotificationsModule,
- AppointmentsModule
+  AppointmentsModule,
+  MembershipModule
   ]
 })
 export class AppModule {}

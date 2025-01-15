@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, ParseUUIDPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { GymsService } from './gyms.service';
 import { CreateGymDto } from '../dto/create-gym.dto';
-import { ProductReviewDto } from 'src/dto/review-product.dto';
 import { GymReviewDto } from 'src/dto/review-gym.dto';
 import { Rol } from 'src/decorators/roles.decorator';
 import { userRoles } from 'src/enums/userRoles.enum';
@@ -42,10 +41,10 @@ export class GymsController {
         return this.gymsService.updateGym(id, gym)
   }
 
-  @Put('/deactivate/:id')
+  @Put('/toggle-status/:id')
   @Rol(userRoles.admin)
   @UseGuards(AuthorizationGuard, RolesGuard)
-  cancelGym(@Param('id') gymId: string) {
-    return this.gymsService.deactivateGym(gymId);
+  toggleGymStatus(@Param('id') gymId: string) {
+    return this.gymsService.toggleGymStatus(gymId);
   }
 }

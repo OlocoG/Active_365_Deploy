@@ -24,7 +24,7 @@ export class Users {
 
     @Column({ type: 'text', nullable: true })
     address?: string;
-  
+
     @Column({ length: 50, nullable: true })
     city?: string;
     
@@ -45,9 +45,15 @@ export class Users {
 
     @Column({ length: 100 , nullable: true })
     googlePassword: string;
+
+    @Column({ type: 'text', nullable: false, default: 'https://example.com/default-image.jpg'})
+    imgUrl: string
     
     @CreateDateColumn({ type: "date", nullable: false})
     createdAt: Date;
+
+    @Column({ type: 'date', nullable: true })
+    membershipExpiresAt: Date;
     
     @ManyToOne(() => Gyms, gym => gym.users)
     @JoinColumn()
