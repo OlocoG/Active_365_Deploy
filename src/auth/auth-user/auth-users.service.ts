@@ -1,12 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto, LoginUserDto } from 'src/dto/users.dto';
 import { Users } from 'src/entities/users.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { EmailService } from 'src/email/email.service';
 import { Gyms } from 'src/entities/gyms.entity';
+import { omit } from 'lodash';
+import { use } from 'passport';
 
 @Injectable()
 export class AuthUsersService {
@@ -18,10 +19,19 @@ export class AuthUsersService {
   ){}
     
   async login(email: string, passwordLogin: string, isGoogleLogin: boolean = false) {
-    let userOrGym: Users | Gyms = await this.userRepository.findOne({ where: { email: email } });
-
+    let userOrGym: Users | Gyms = await this.userRepository.findOne({ where: { email: email }, relations: ['gym', 'appointments', 'orders', 'reviews', 'reviewsGyms' ] });
+    
     if (!userOrGym) {
-      userOrGym = await this.gymRepository.findOne({ where: { email: email } });
+      userOrGym = await this.gymRepository.findOne({ where: { email: email }, relations: ['users', 'classes', 'reviews'] });
+      if( userOrGym.users !== null){
+      userOrGym.users = userOrGym.users.map(user => omit(user, ['password', 'googlePassword']));
+      }
+    }
+    else {
+      if( userOrGym.gym !== null){
+      const { password, googlePassword, ...gymWithoutPasswords } = userOrGym.gym;
+      userOrGym.gym = gymWithoutPasswords as Gyms;
+      }
     }
     
     if (!userOrGym) throw new NotFoundException(`Incorrect credentials`);
@@ -31,22 +41,26 @@ export class AuthUsersService {
   
     const isMatch = await bcrypt.compare(passwordLogin, hashToCompare);
     if (!isMatch) throw new NotFoundException(`Incorrect credentials`);
-  
-    const userPayload = {
+    
+    const { password, googlePassword, ...userWithoutPassword } = userOrGym;
+    const response = {
       id: userOrGym.id,
       email: userOrGym.email,
       rol: userOrGym.rol 
     }
-    const token = this.jwtService.sign(userPayload);
+    const token = this.jwtService.sign(response);
     return {
       message: 'Login successful',
       token,
-      user: userPayload
+      data: userWithoutPassword
     }
   }
   
   
   async createUser(user: Partial<Users>, isGoogleCreate: boolean = false) {
+    let gymFound: Users | Gyms =  await this.gymRepository.findOne({ where: { email: user.email } });
+    if(gymFound) throw new BadRequestException(`The email ${user.email} is currently registered as a gym`);
+
     const userFound = await this.userRepository.findOne({ where: { email: user.email } });
     if (userFound) throw new BadRequestException(`The email ${user.email} already exists`);
 

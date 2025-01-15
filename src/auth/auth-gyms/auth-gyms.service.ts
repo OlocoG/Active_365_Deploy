@@ -17,6 +17,9 @@ export class AuthGymsService {
   ){}
   
   async createGym(gym: Partial<Gyms>, isGoogleCreate: boolean = false) {
+    let userFound: Users | Gyms =  await this.userRepository.findOne({ where: { email: gym.email } });
+    if(userFound) throw new BadRequestException(`The email ${gym.email} is currently registered as a user`);
+
     const gymFound = await this.gymsRepository.findOne({ where: { email: gym.email } });
     if (gymFound) throw new BadRequestException(`El email ${gym.email} ya existe`);
 
