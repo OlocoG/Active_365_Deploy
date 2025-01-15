@@ -1,4 +1,4 @@
-import { statusAppointment } from 'src/enums/statusAppointments.enum';
+import { statusAppointment } from "src/enums/statusAppointments.enum";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { v4 as uuid } from 'uuid';
 import { Classes } from "./class.entity";
