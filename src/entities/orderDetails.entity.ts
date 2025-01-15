@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { v4 as uuid } from 'uuid';
 
 import { Orders } from "./orders.entity";
@@ -12,7 +12,7 @@ export class OrderDetails {
     @Column({ type: 'decimal', precision: 10, scale: 2, nullable: false })
     totalPrice: number;
 
-    @OneToOne(() => Orders, (order) => order.orderDetails)
+    @OneToOne(() => Orders, (order) => order.orderDetails, { onDelete: 'CASCADE' })
     @JoinColumn()
     order: Orders;
 
