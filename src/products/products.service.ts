@@ -49,7 +49,7 @@ export class ProductsService {
   async onModuleInit() {
     const categoriesCount = await this.categoriesRepository.count();
     if (categoriesCount ===0) {
-      console.log('No categories found, initializing gyms...');
+      console.log('No categories found, initializing categories...');
       const categoriesService = new CategoriesService(this.categoriesRepository)
       await categoriesService.addCategories();
     }
