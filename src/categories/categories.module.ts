@@ -9,7 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TypeOrmModule.forFeature([Categories]),
   ],
   controllers: [CategoriesController],
-  providers: [CategoriesService],
+  providers: [CategoriesService]
 })
 export class CategoriesModule implements OnModuleInit{
   constructor(private readonly categoriesService: CategoriesService) {}

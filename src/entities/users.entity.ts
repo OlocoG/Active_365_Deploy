@@ -51,6 +51,9 @@ export class Users {
     
     @CreateDateColumn({ type: "date", nullable: false})
     createdAt: Date;
+
+    @Column({ type: 'date', nullable: true })
+    membershipExpiresAt: Date;
     
     @ManyToOne(() => Gyms, gym => gym.users)
     @JoinColumn()

@@ -11,16 +11,17 @@ import { Users } from 'src/entities/users.entity';
 import { ProductReviewDto } from 'src/dto/review-product.dto';
 import { parse } from 'path';
 import { statusProduct } from 'src/enums/status.enum';
+import { CategoriesService } from 'src/categories/categories.service';
 
 
 @Injectable()
 export class ProductsService {
 
   constructor(
-    @InjectRepository(Products) 
-    private productsRepository: Repository<Products>,
     @InjectRepository(Categories)
     private categoriesRepository: Repository<Categories>,
+    @InjectRepository(Products) 
+    private productsRepository: Repository<Products>,
     @InjectRepository(Users) 
     private usersRepository: Repository<Users>,
     @InjectRepository(ReviewsProducts) 
@@ -28,13 +29,48 @@ export class ProductsService {
     private readonly filesUploadService: FilesUploadService,
 ) {}
 
-  async addProducts() {
-    const categories = await this.categoriesRepository.find();
+  private async waitForCategories() {
+    const pollInterval = 500;  
+    const timeout = 20000;
+    let elapsedTime = 0;
 
-    data?.map(async (element) => {
+    while (elapsedTime < timeout) {
+      const categoriesCount = await this.categoriesRepository.count();
+      if (categoriesCount > 0) {
+          return;
+      }
+      await new Promise((resolve) => setTimeout(resolve, pollInterval));
+      elapsedTime += pollInterval;
+  }
+
+    throw new Error('Timeout: Categories were not initialized in time.');
+  }
+
+  async onModuleInit() {
+    const categoriesCount = await this.categoriesRepository.count();
+    if (categoriesCount ===0) {
+      console.log('No categories found, initializing gyms...');
+      const categoriesService = new CategoriesService(this.categoriesRepository)
+      await categoriesService.addCategories();
+    }
+
+    await this.waitForCategories();
+
+    const categories = await this.categoriesRepository.find();
+    if (categories.length === 0) {
+        throw new Error('No se encontraron categorías para asociar los productos');
+    }
+
+    for (const element of data) {
         const category = categories.find(
             (category) => category.name === element.category,
-        )
+        );
+
+        if (!category) {
+            console.warn(`Categoría no encontrada para el producto ${element.name}`);
+            continue;  // Si la categoría no existe, no se agrega el producto
+        }
+
         const product = new Products();
         product.name = element.name;
         product.description = element.description;
@@ -50,9 +86,10 @@ export class ProductsService {
         .into(Products)
         .values(product)
         .orUpdate(['description', 'price', 'stock', 'subcategory'], ['name'])
-        .execute()
-    });
-    return "Products added"
+        .execute();
+    }
+
+    return "Products added";
   }
   
   async getProducts(filterDto?: FilterProductsDto) {

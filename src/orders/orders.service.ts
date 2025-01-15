@@ -8,6 +8,8 @@ import { Orders } from 'src/entities/orders.entity';
 import { Products } from 'src/entities/products.entity';
 import { Users } from 'src/entities/users.entity';
 import { DataSource, Repository } from 'typeorm';
+import { userRoles } from 'src/enums/userRoles.enum';
+import { MembershipService } from 'src/membership/membership.service';
 
 @Injectable()
 export class OrdersService {
@@ -22,6 +24,7 @@ export class OrdersService {
         @InjectRepository(Products)
         private productsRepository: Repository<Products>,
         private readonly emailService: EmailService,
+        private readonly membershipService: MembershipService,
     ){}
 
     async createOrder(userId: string, products: ProductOrderDto[]) {
@@ -41,9 +44,13 @@ export class OrdersService {
 
             let totalPrice = 0;
             const OrderProducts = [];
+            let membershipPurchased = null;
 
             for (const { productId, quantity } of products) {
-                const product = await manager.findOne(Products, { where: { id: productId } });
+                const product = await manager.findOne(Products, { 
+                    where: { id: productId },
+                    relations: ['category'],
+                });
                 if (!product || product.stock < quantity) {
                     throw new NotFoundException(`Product with id ${productId} is unavailable`);
                 }
@@ -57,12 +64,32 @@ export class OrdersService {
                 product.stock -= quantity;
                 await manager.save(product);
                 OrderProducts.push(orderProduct);
+
+                if (product.category.name.toLowerCase() === 'memberships') {
+                    membershipPurchased = product.name.toLowerCase();
+                }
             }
             orderDetails.totalPrice = totalPrice;
             orderDetails.orderProducts = OrderProducts;
             await manager.save(orderDetails);
 
             newOrder.orderDetails = orderDetails;
+
+            if (membershipPurchased && user.rol !== userRoles.member) {
+                user.rol = userRoles.member;
+                user.membershipExpiresAt = this.membershipService.calculateMembershipExpiration(membershipPurchased);
+                await manager.save(user);
+                await this.emailService.sendMembershipConfirmationEmail(
+                    user.email,
+                    {
+                        user: user,
+                        product: {
+                            name: membershipPurchased, 
+                        },
+                        expirationDate: user.membershipExpiresAt.toISOString().split('T')[0],
+                    },
+                );
+            }
 
             await manager.save(newOrder);
             await this.emailService.sendOrderConfirmationEmail(

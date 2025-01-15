@@ -226,5 +226,52 @@ export class EmailService {
 
         await this.transporter.sendMail(mailOptions);
     }
+
+    async sendMembershipConfirmationEmail(email: string, membershipDetails: any) {
+        const templatePath = process.env.NODE_ENV === 'production'
+            ? path.join(__dirname, '..', 'templates', 'membership-confirmation.hbs')
+            : path.join(__dirname, '..', '..', 'src', 'templates', 'membership-confirmation.hbs');
+        
+        const source = fs.readFileSync(templatePath, 'utf-8');
+        const compiledTemplate = handlebars.compile(source);
+    
+        const htmlToSend = compiledTemplate({
+            name: membershipDetails.user.name,
+            membershipName: membershipDetails.product.name,
+            expirationDate: new Date(membershipDetails.expirationDate).toLocaleDateString(),
+        });
+    
+        const mailOptions = {
+            from: `"No Reply" <${process.env.MAIL_FROM}>`,
+            to: email,
+            subject: 'Membership Confirmation - Active365',
+            html: htmlToSend,
+        };
+    
+        await this.transporter.sendMail(mailOptions);
+    }
+
+    async sendMembershipExpirationReminderEmail(email: string, membershipDetails: any) {
+        const templatePath = process.env.NODE_ENV === 'production'
+            ? path.join(__dirname, '..', 'templates', 'membership-expiration-.hbs')
+            : path.join(__dirname, '..', '..', 'src', 'templates', 'membership-expiration.hbs');
+        
+        const source = fs.readFileSync(templatePath, 'utf-8');
+        const compiledTemplate = handlebars.compile(source);
+    
+        const htmlToSend = compiledTemplate({
+            name: membershipDetails.user.name,
+            expirationDate: new Date(membershipDetails.expirationDate).toLocaleDateString(),
+        });
+    
+        const mailOptions = {
+            from: `"No Reply" <${process.env.MAIL_FROM}>`,
+            to: email,
+            subject: 'Your Membership is About to Expire - Active365',
+            html: htmlToSend,
+        };
+    
+        await this.transporter.sendMail(mailOptions);
+    }
 }
 

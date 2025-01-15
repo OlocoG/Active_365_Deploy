@@ -24,7 +24,7 @@ export class UserController {
       }
       
     @Get(':id')
-    @UseGuards(AuthorizationGuard, RolesGuard)
+    @UseGuards(AuthorizationGuard)
     getUserById(@Param('id', ParseUUIDPipe) id: string) {
         return this.userService.getUserById(id);
     }

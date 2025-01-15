@@ -12,17 +12,26 @@ export class CategoriesService {
     ) {}
     
     async addCategories() {
-        
-        data.map(async (product) => {
-            await this.categoriesRepository
-            .createQueryBuilder()
-            .insert()
-            .into(Categories)
-            .values({name: product.category})
-            .onConflict(`("name") DO NOTHING`)
-            .execute()
-        })
-        return `Se han añadido las categorías`
+        const promises = data.map(async (product) => {
+            const result = await this.categoriesRepository
+                .createQueryBuilder()
+                .insert()
+                .into(Categories)
+                .values({ name: product.category })
+                .onConflict(`("name") DO NOTHING`)
+                .execute();
+
+                await this.categoriesRepository
+                .createQueryBuilder()
+                .insert()
+                .into(Categories)
+                .values({ name: 'other' })
+                .onConflict(`("name") DO NOTHING`)
+                .execute();
+        });
+    
+        await Promise.all(promises);
+        return `Categories added`;
     }
 
     async getCategories() {
