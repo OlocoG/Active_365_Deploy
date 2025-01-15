@@ -68,7 +68,7 @@ export class ProductsService {
 
         if (!category) {
             console.warn(`Categoría no encontrada para el producto ${element.name}`);
-            continue;  // Si la categoría no existe, no se agrega el producto
+            continue;
         }
 
         const product = new Products();
