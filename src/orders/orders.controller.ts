@@ -15,7 +15,13 @@ export class OrdersController {
   getOrder(@Param('id', ParseUUIDPipe) id:string){
     return this.ordersService.getOrder(id);
   }
-
+  
+  // @Put(':id')
+  // updateOrder(@Param('id', ParseUUIDPipe) id:string, @Body() order: CreateOrderDto) {
+  //   const { userId, products } = order;
+  //   return this.ordersService.updateOrder(id, userId, products);
+  // }
+  
   @Post()
   @Rol(userRoles.registered, userRoles.member)
   @UseGuards(AuthorizationGuard, RolesGuard)
@@ -23,5 +29,5 @@ export class OrdersController {
       const { userId, products } = order;
       return this.ordersService.createOrder(userId, products);
   }
-  
+
 }

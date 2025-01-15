@@ -14,7 +14,7 @@ export class Orders {
     @JoinColumn()
     user: Users;
 
-    @OneToOne(() => OrderDetails, (orderDetails) => orderDetails.order, {cascade: true})
+    @OneToOne(() => OrderDetails, (orderDetails) => orderDetails.order, { onDelete: 'CASCADE' })
     @JoinColumn()
     orderDetails: OrderDetails;
 }

@@ -122,5 +122,33 @@ export class OrdersService {
         }
         return order;
     }
+
+    // async updateOrder(id: string, userId: string, products: ProductOrderDto[]) {
+    //     return await this.dataSource.transaction(async (manager) => {
+    //         const order = await manager.findOne(Orders, { where: { id } });
+    //         if (!order) {
+    //             throw new NotFoundException(`Order with id ${id} not found`);
+    //         }
+    //         if (order.user.id !== userId) {
+    //             throw new BadRequestException('You are not allowed to update this order');
+    //         }
+    //         const orderDetails = await manager.findOne(OrderDetails, { where: { order: order } });
+    //         if (!orderDetails) {
+    //             throw new NotFoundException(`Order details for order with id ${id} not found`);
+    //         }
+    //         const orderProducts = await manager.find(OrderProduct, { where: { orderDetails } });
+    //         for (const orderProduct of orderProducts) {
+    //             const product = await manager.findOne(Products, { where: { id: orderProduct.product.id } });
+    //             product.stock += orderProduct.quantity;
+    //             await manager.save(product);
+    //             await manager.remove(orderProduct);
+    //         }
+    //         await manager.remove(orderDetails);
+    //         order.orderDetails = null;
+    //         await manager.save(order);
+    //         return await this.createOrder(userId, products);
+    //     });
+    // }
+    
     
 }
