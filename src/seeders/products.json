@@ -223,6 +223,42 @@
       "stock": 200,
       "category": "Health & Wellness",
       "subcategory": "Pain Relief"
+    },
+    {
+      "name": "Monthly Membership",
+      "description": "Access to gym facilities and standard classes for one month.",
+      "imgUrl": "https://example.com/default-image.jpg",
+      "price": 29.99,
+      "stock": 2147483647,
+      "category": "Memberships",
+      "subcategory": "Monthly"
+    },
+    {
+      "name": "Quarterly Membership",
+      "description": "Three-month access to gym facilities, including premium classes and guest passes.",
+      "imgUrl": "https://example.com/default-image.jpg",
+      "price": 79.99,
+      "stock": 2147483647,
+      "category": "Memberships",
+      "subcategory": "Quarterly"
+    },
+    {
+      "name": "Semiannual Membership",
+      "description": "Six-month membership with added benefits like free personal trainer sessions.",
+      "imgUrl": "https://example.com/default-image.jpg",
+      "price": 149.99,
+      "stock": 2147483647,
+      "category": "Memberships",
+      "subcategory": "Semi-Annual"
+    },
+    {
+      "name": "Annual Membership",
+      "description": "Full-year access with exclusive perks, discounts on gym merchandise, and free workshops.",
+      "imgUrl": "https://example.com/default-image.jpg",
+      "price": 279.99,
+      "stock": 2147483647,
+      "category": "Memberships",
+      "subcategory": "Annual"
     }
   ]
   

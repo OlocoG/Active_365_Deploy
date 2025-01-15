@@ -66,10 +66,10 @@ export class ProductsController {
   return this.productsService.getProductsByCategory(categoryId);
   }
 
-  @Put('/deactivate/:id')
+  @Put('/toggle-status/:id')
   @Rol(userRoles.admin, userRoles.partner)
   @UseGuards(AuthorizationGuard, RolesGuard)
-  desactivateProduct(@Param('id') productId: string) {
-    return this.productsService.deactivateProduct(productId);
+  toggleProductStatus(@Param('id') productId: string) {
+    return this.productsService.toggleProductStatus(productId);
   }
 }
