@@ -166,10 +166,8 @@ export class ProductsService {
     }));
 
     return product;
-}
+  }
 
-
-  
   async createProduct(product:any, file: Express.Multer.File) {
     const categoryFound = await this.categoriesRepository.findOne({
       where: { name: product.category }
@@ -290,14 +288,21 @@ export class ProductsService {
       .getMany();
   }
 
-  async deactivateProduct(productId: string): Promise<{ message: string }> {
-    const product = await this.productsRepository.findOne({ where: { id: productId } });
-    if (!product) {
-        throw new NotFoundException(`Product with ID ${productId} not found.`);
-    }
-    product.status = statusProduct.inactive;
-    await this.productsRepository.save(product);
-
-    return { message: `Product with ID ${productId} has been deactivated successfully.` };
-  }
+  async toggleProductStatus(productId: string): Promise<{ message: string }> {  
+        const product = await this.productsRepository.findOne({ where: { id: productId } });
+        if (!product) {
+            throw new NotFoundException(`Product with ID ${productId} not found.`);
+        }
+        
+        if (product.status === statusProduct.active) {
+            product.status = statusProduct.inactive; 
+        } else if (product.status === statusProduct.inactive) {
+            product.status = statusProduct.active; 
+        } else {
+            throw new Error('Unexpected product status.');
+        }
+    
+        await this.productsRepository.save(product);
+        return { message: `Product with ID ${productId} has been ${product.status === statusProduct.active ? 'activated' : 'deactivated'} successfully.` };
+      }
 }

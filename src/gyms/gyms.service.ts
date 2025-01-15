@@ -111,17 +111,23 @@ return gymFound;
     }
   }
 
-  async deactivateGym(gymId: string): Promise<{ message: string }> {        
-    const gym = await this.gymsRepository.findOne({ where: { id: gymId } });
-    if (!gym) {
-      throw new NotFoundException(`Gym with ID ${gymId} not found.`);
-    }
-      
-    gym.status = statusGym.inactive;
-    await this.gymsRepository.save(gym);
-      
-    return { message: `Gym with ID ${gymId} has been deactivated successfully.` };
-  }
+  async toggleGymStatus(gymId: string): Promise<{ message: string }> {  
+        const gym = await this.gymsRepository.findOne({ where: { id: gymId } });
+        if (!gym) {
+            throw new NotFoundException(`Gym with ID ${gymId} not found.`);
+        }
+        
+        if (gym.status === statusGym.active) {
+            gym.status = statusGym.inactive; 
+        } else if (gym.status === statusGym.inactive) {
+            gym.status = statusGym.active; 
+        } else {
+            throw new Error('Unexpected Gym status.');
+        }
+    
+        await this.gymsRepository.save(gym);
+        return { message: `Gym with ID ${gymId} has been ${gym.status === statusGym.active ? 'activated' : 'deactivated'} successfully.` };
+      }
 
   async addReview(review: GymReviewDto) {
       const gym = await this.gymsRepository.findOne({

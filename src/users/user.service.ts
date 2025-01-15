@@ -96,16 +96,22 @@ export class UserService {
         return 'Users added';
     }
 
-    async deactivateUser(userId: string): Promise<{ message: string }> {  
+    async toggleUserStatus(userId: string): Promise<{ message: string }> {  
       const user = await this.userRepository.findOne({ where: { id: userId } });
       if (!user) {
           throw new NotFoundException(`User with ID ${userId} not found.`);
       }
-    
-      user.status = statusUser.inactive;
+      
+      if (user.status === statusUser.active) {
+          user.status = statusUser.inactive; 
+      } else if (user.status === statusUser.inactive) {
+          user.status = statusUser.active; 
+      } else {
+          throw new Error('Unexpected user status.');
+      }
+  
       await this.userRepository.save(user);
-    
-      return { message: `User with ID ${userId} has been deactivated successfully.` };
+      return { message: `User with ID ${userId} has been ${user.status === statusUser.active ? 'activated' : 'deactivated'} successfully.` };
     }
 
     async setAdmin(userId: string): Promise<{ message: string }> {

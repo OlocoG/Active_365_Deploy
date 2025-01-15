@@ -41,11 +41,11 @@ export class UserController {
         return this.userService.updateUser(id, user, file);
     }
 
-    @Put('/deactivate/:id')
+    @Put('/toggle-status/:id')
     @Rol(userRoles.admin, userRoles.partner)
     @UseGuards(AuthorizationGuard, RolesGuard)
-    desactivateUser(@Param('id') userId: string) {
-      return this.userService.deactivateUser(userId);
+    toggleUserStatus(@Param('id') userId: string) {
+      return this.userService.toggleUserStatus(userId);
     }
   
     @Put('/setadmin/:id')
