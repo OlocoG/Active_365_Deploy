@@ -10,10 +10,11 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
+    
+    @Get()
     @Rol(userRoles.admin)
     @UseGuards(AuthorizationGuard, RolesGuard)
-    @Get()
-    getUser(@Query ('page') page: number, @Query ('limit') limit: number) {
+    getUsers(@Query ('page') page: number, @Query ('limit') limit: number) {
         if (page && limit) {
           return this.userService.getAllUsers(+page, +limit);
         }
@@ -21,21 +22,30 @@ export class UserController {
       }
       
     @Get(':id')
+    @Rol(userRoles.admin, userRoles.partner)
+    @UseGuards(AuthorizationGuard, RolesGuard)
+
     getUserById(@Param('id', ParseUUIDPipe) id: string) {
         return this.userService.getUserById(id);
       }
 
     @Put(':id')
+    @Rol(userRoles.registered, userRoles.member)
+    @UseGuards(AuthorizationGuard, RolesGuard)
     updateUser(@Param('id', ParseUUIDPipe) id: string, @Body() user: Partial<Users>) {
         return this.userService.updateUser(id, user);
       }
 
     @Put('/deactivate/:id')
-    cancelAppointment(@Param('id') userId: string) {
+    @Rol(userRoles.admin, userRoles.partner)
+    @UseGuards(AuthorizationGuard, RolesGuard)
+    desactivateUser(@Param('id') userId: string) {
       return this.userService.deactivateUser(userId);
     }
   
     @Put('/setadmin/:id')
+    @Rol(userRoles.admin)
+    @UseGuards(AuthorizationGuard, RolesGuard)
     setAdmin(@Param('id') userId: string) {
       return this.userService.setAdmin(userId);
     }
