@@ -1,5 +1,16 @@
 [
     {
+      "name": "Admin",
+      "email": "admin@example.com",
+      "phone": 4448889922,
+      "address": "Calle 901, Avenida 234",
+      "city": "Los Angeles",
+      "rol": "admin",
+      "height": 1.80,
+      "weight": 80.1,
+      "password": "Password111!"
+    },
+    {
       "name": "Juan Pérez",
       "email": "juan.perez@example.com",
       "phone": 1234567890,
