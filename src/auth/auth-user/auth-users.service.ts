@@ -23,11 +23,15 @@ export class AuthUsersService {
     
     if (!userOrGym) {
       userOrGym = await this.gymRepository.findOne({ where: { email: email }, relations: ['users', 'classes', 'reviews'] });
+      if( userOrGym.users !== null){
       userOrGym.users = userOrGym.users.map(user => omit(user, ['password', 'googlePassword']));
+      }
     }
     else {
+      if( userOrGym.gym !== null){
       const { password, googlePassword, ...gymWithoutPasswords } = userOrGym.gym;
       userOrGym.gym = gymWithoutPasswords as Gyms;
+      }
     }
     
     if (!userOrGym) throw new NotFoundException(`Incorrect credentials`);
@@ -48,12 +52,15 @@ export class AuthUsersService {
     return {
       message: 'Login successful',
       token,
-      user: userWithoutPassword
+      data: userWithoutPassword
     }
   }
   
   
   async createUser(user: Partial<Users>, isGoogleCreate: boolean = false) {
+    let gymFound: Users | Gyms =  await this.gymRepository.findOne({ where: { email: user.email } });
+    if(gymFound) throw new BadRequestException(`The email ${user.email} is currently registered as a gym`);
+
     const userFound = await this.userRepository.findOne({ where: { email: user.email } });
     if (userFound) throw new BadRequestException(`The email ${user.email} already exists`);
 
