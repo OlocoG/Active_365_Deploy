@@ -27,29 +27,21 @@ export class ClassesController {
 
   
   @Get()
-  @Rol(userRoles.member, userRoles.admin, userRoles.partner)
-  @UseGuards(AuthorizationGuard, RolesGuard)
   getClassesByGymId(@Query('gymId') gymId: string) {
     return this.classesService.getClassesByGymId(gymId);
   }
 
   @Get('/all')
-  @Rol(userRoles.member, userRoles.admin)
-  @UseGuards(AuthorizationGuard, RolesGuard)
   getClasses() {
     return this.classesService.getClasses();
   }
   
   @Get('/gym/:name')
-  @Rol(userRoles.member, userRoles.admin)
-  @UseGuards(AuthorizationGuard, RolesGuard)
   getClasssesByGymName(@Param('name') name: string) {
     return this.classesService.getClassesByGymName(name);
   }
 
   @Get(':id')
-  @Rol(userRoles.member, userRoles.admin, userRoles.partner)
-  @UseGuards(AuthorizationGuard, RolesGuard)
   getClassesById(@Param('id', ParseUUIDPipe) id: string) {
     return this.classesService.getClassesById(id);
   }
