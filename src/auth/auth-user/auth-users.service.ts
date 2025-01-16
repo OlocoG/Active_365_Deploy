@@ -52,8 +52,8 @@ export class AuthUsersService {
     return {
       message: 'Login successful',
       token,
-      data: userWithoutPassword
-    }
+      user: userWithoutPassword
+    }
   }
   
   

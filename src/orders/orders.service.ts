@@ -10,6 +10,7 @@ import { Users } from 'src/entities/users.entity';
 import { DataSource, Repository } from 'typeorm';
 import { userRoles } from 'src/enums/userRoles.enum';
 import { MembershipService } from 'src/membership/membership.service';
+import { statusOrder } from 'src/enums/status.enum';
 
 @Injectable()
 export class OrdersService {
@@ -26,6 +27,25 @@ export class OrdersService {
         private readonly emailService: EmailService,
         private readonly membershipService: MembershipService,
     ){}
+
+    async getAllOrders(){
+        const currentDate = new Date();
+        const orders = await this.ordersRepository.find({
+            relations: ['orderDetails']
+        });
+        const ordersFiltered = orders.filter((order) => {
+            const orderDate = new Date(order.date);
+            const differenceInTime = currentDate.getTime() - orderDate.getTime();
+            const hoursDifference = differenceInTime / (1000 * 3600);
+            if (hoursDifference > 24 && order.status === statusOrder.pending) {
+                order.status = statusOrder.completed;
+                this.ordersRepository.save(order);
+            }
+            return order;}
+
+        );
+        return ordersFiltered;
+    }
 
     async createOrder(userId: string, products: ProductOrderDto[]) {
         return await this.dataSource.transaction(async (manager) => {
@@ -110,7 +130,26 @@ export class OrdersService {
         });
 
     }
-    
+
+    async getOrdersByUser(userId: string){
+        const orders = await this.ordersRepository.find({
+            where: { user: {id: userId} },
+            relations: ['orderDetails']
+        });
+
+        const currentDate = new Date();
+        const ordersFiltered = orders.filter((order) => {
+            const orderDate = new Date(order.date);
+            const differenceInTime = currentDate.getTime() - orderDate.getTime();
+            const hoursDifference = differenceInTime / (1000 * 3600);
+            if (hoursDifference > 24 && order.status === statusOrder.pending) {
+                order.status = statusOrder.completed;
+                this.ordersRepository.save(order);
+            }
+            return order;});
+        return ordersFiltered;
+        }
+
     
     async getOrder(id: string){
         const order = await this.ordersRepository.findOne({
@@ -123,32 +162,26 @@ export class OrdersService {
         return order;
     }
 
-    // async updateOrder(id: string, userId: string, products: ProductOrderDto[]) {
-    //     return await this.dataSource.transaction(async (manager) => {
-    //         const order = await manager.findOne(Orders, { where: { id } });
-    //         if (!order) {
-    //             throw new NotFoundException(`Order with id ${id} not found`);
-    //         }
-    //         if (order.user.id !== userId) {
-    //             throw new BadRequestException('You are not allowed to update this order');
-    //         }
-    //         const orderDetails = await manager.findOne(OrderDetails, { where: { order: order } });
-    //         if (!orderDetails) {
-    //             throw new NotFoundException(`Order details for order with id ${id} not found`);
-    //         }
-    //         const orderProducts = await manager.find(OrderProduct, { where: { orderDetails } });
-    //         for (const orderProduct of orderProducts) {
-    //             const product = await manager.findOne(Products, { where: { id: orderProduct.product.id } });
-    //             product.stock += orderProduct.quantity;
-    //             await manager.save(product);
-    //             await manager.remove(orderProduct);
-    //         }
-    //         await manager.remove(orderDetails);
-    //         order.orderDetails = null;
-    //         await manager.save(order);
-    //         return await this.createOrder(userId, products);
-    //     });
-    // }
-    
-    
+    async deleteOrder(orderId: string){
+        const order = await this.ordersRepository.findOne({
+            where: {id: orderId},
+            relations: ['orderDetails']
+        });
+        if (!order) {
+            throw new NotFoundException (`Order with id ${orderId} was not found`);
+        }
+        const currentDate = new Date();
+        const orderDate = new Date(order.date);
+        const differenceInTime = currentDate.getTime() - orderDate.getTime();
+        const hoursDifference = differenceInTime / (1000 * 3600);
+        if (hoursDifference > 24) {
+            throw new BadRequestException('You can only cancel orders within the first 24 hours');
+        }
+        else {
+            order.status = statusOrder.cancelled;
+            await this.ordersRepository.save(order);
+            return order;
+        };
+    }
+
 }

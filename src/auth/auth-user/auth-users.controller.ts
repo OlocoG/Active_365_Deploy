@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Res } from '@nestjs/common';
 import { AuthUsersService } from './auth-users.service';
 import { CreateUserDto, LoginUserDto } from 'src/dto/users.dto';
 import {GoogleUserAuthGuard } from 'src/auth/guards/googleUserAuth.guard';
@@ -27,12 +27,14 @@ export class AuthUsersController {
 
   @Get('google/callback')
   @UseGuards(GoogleUserAuthGuard)
-  async googleCallback(@Req() req) {
+  async googleCallback(@Req() req, @Res() res) {
     if(req.user.email){
       const email = req.user.email;
       const password = reverseAndMixEmail(req.user.email);
-      return this.authUsersService.login(email, password, true);
+      const response = await this.authUsersService.login(email, password, true);
+      res.redirect(`http://localhost:3001?token=${response.token}`)
     }
+    
     return {message: 'Faltan datos'}
   }
 }

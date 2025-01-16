@@ -41,10 +41,18 @@ export class ClassesController {
     return this.classesService.getClassesByGymName(name);
   }
 
+  @Put('cancel/:id')
+  @Rol(userRoles.partner, userRoles.admin)
+  @UseGuards(AuthorizationGuard, RolesGuard)
+  cancelClass(@Param('id', ParseUUIDPipe) id: string) {
+    return this.classesService.cancelClass(id);
+  }
+
   @Get(':id')
   getClassesById(@Param('id', ParseUUIDPipe) id: string) {
     return this.classesService.getClassesById(id);
   }
+
 
   @Post()
   @Rol(userRoles.partner, userRoles.admin)
