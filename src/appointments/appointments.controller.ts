@@ -12,8 +12,8 @@ export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
 
   @Post()
-  @Rol(userRoles.member, userRoles.partner)
-  @UseGuards(AuthorizationGuard, RolesGuard)
+  // @Rol(userRoles.member, userRoles.partner)
+  // @UseGuards(AuthorizationGuard, RolesGuard)
   async createAppointment(
   @Body() createAppointmentDto: CreateAppointmentDto): Promise<Appointments> {
     const { userId, classId } = createAppointmentDto;

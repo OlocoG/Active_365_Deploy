@@ -20,14 +20,14 @@ export class StripeController {
   async cancelCheckout() {
     return this.stripeService.cancelCheckout();
   }
+  @Get('/status/:sessionId')
+  async sessionStatus(@Param('sessionId') sessionId: string) {
+    return this.stripeService.sessionStatus(sessionId);
+  }
 
   @Post('/:orderId')
   async getCheckoutSession(@Param('orderId', ParseUUIDPipe) orderId: string) {
     return this.stripeService.getCheckoutSession(orderId);
   }
-
-  @Get('/status/:sessionId')
-  async sessionStatus(@Param('sessionId') sessionId: string) {
-    return this.stripeService.sessionStatus(sessionId);
-  }
 }
+
