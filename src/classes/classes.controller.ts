@@ -19,6 +19,7 @@ import { Rol } from 'src/decorators/roles.decorator';
 import { userRoles } from 'src/enums/userRoles.enum';
 import { AuthorizationGuard } from 'src/auth/guards/authorization.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 
 @Controller('classes')
@@ -41,6 +42,7 @@ export class ClassesController {
     return this.classesService.getClassesByGymName(name);
   }
 
+  @ApiBearerAuth('access-token')
   @Put('cancel/:id')
   @Rol(userRoles.partner, userRoles.admin)
   @UseGuards(AuthorizationGuard, RolesGuard)
@@ -53,7 +55,7 @@ export class ClassesController {
     return this.classesService.getClassesById(id);
   }
 
-
+  @ApiBearerAuth('access-token')
   @Post()
   @Rol(userRoles.partner, userRoles.admin)
   @UseGuards(AuthorizationGuard, RolesGuard)
@@ -76,6 +78,7 @@ export class ClassesController {
     );
   }
 
+  @ApiBearerAuth('access-token')
   @Put(':id')
   @Rol(userRoles.partner, userRoles.admin)
   @UseGuards(AuthorizationGuard, RolesGuard)

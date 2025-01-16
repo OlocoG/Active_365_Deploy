@@ -7,12 +7,13 @@ import { userRoles } from 'src/enums/userRoles.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidateImagesPipe } from 'src/files-upload/file-validation.pipe';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('users')
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    
+    @ApiBearerAuth('access-token')
     @Get()
     @Rol(userRoles.admin)
     @UseGuards(AuthorizationGuard, RolesGuard)
@@ -23,12 +24,14 @@ export class UserController {
         return this.userService.getAllUsers(1, 5);
       }
       
+    @ApiBearerAuth('access-token')
     @Get(':id')
     @UseGuards(AuthorizationGuard)
     getUserById(@Param('id', ParseUUIDPipe) id: string) {
         return this.userService.getUserById(id);
     }
 
+    @ApiBearerAuth('access-token')
     @Put(':id')
     @Rol(userRoles.registered, userRoles.member)
     @UseGuards(AuthorizationGuard, RolesGuard)
@@ -41,6 +44,7 @@ export class UserController {
         return this.userService.updateUser(id, user, file);
     }
 
+    @ApiBearerAuth('access-token')
     @Put('/toggle-status/:id')
     @Rol(userRoles.admin, userRoles.partner)
     @UseGuards(AuthorizationGuard, RolesGuard)
@@ -48,6 +52,7 @@ export class UserController {
       return this.userService.toggleUserStatus(userId);
     }
   
+    @ApiBearerAuth('access-token')
     @Put('/setadmin/:id')
     @Rol(userRoles.admin)
     @UseGuards(AuthorizationGuard, RolesGuard)
