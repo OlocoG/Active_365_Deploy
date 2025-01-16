@@ -44,8 +44,8 @@ export class StripeService {
          line_items: lineItems,
          mode: 'payment',
          payment_method_types: ['card'],
-         success_url: `${process.env.CLIENT_URL}checkout/success`,
-         cancel_url: `${process.env.CLIENT_URL}checkout/cancelled`,
+         success_url: `${process.env.CLIENT_URL}`,
+         cancel_url: `${process.env.CLIENT_URL}`,
        });
   
        return session;
