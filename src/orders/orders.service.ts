@@ -165,7 +165,7 @@ export class OrdersService {
     async deleteOrder(orderId: string){
         const order = await this.ordersRepository.findOne({
             where: {id: orderId},
-            relations: ['orderDetails']
+            relations: ['orderDetails', 'user']
         });
         if (!order) {
             throw new NotFoundException (`Order with id ${orderId} was not found`);
@@ -177,11 +177,20 @@ export class OrdersService {
         if (hoursDifference > 24) {
             throw new BadRequestException('You can only cancel orders within the first 24 hours');
         }
-        else {
-            order.status = statusOrder.cancelled;
-            await this.ordersRepository.save(order);
-            return order;
+        
+        order.status = statusOrder.cancelled;
+        await this.ordersRepository.save(order);
+
+        const orderDetails = {
+            user: {
+                name: order.user.name, 
+                email: order.user.email, 
+            },
+            totalPrice: order.orderDetails.totalPrice,
         };
+    
+        await this.emailService.sendOrderCancellationEmail(orderDetails.user.email, orderDetails);
+            return order;
+        }
     }
 
-}

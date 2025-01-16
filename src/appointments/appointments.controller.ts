@@ -12,7 +12,7 @@ export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
 
   @Post()
-  @Rol(userRoles.member, userRoles.partner)
+  @Rol(userRoles.member, userRoles.partner, userRoles.admin)
   @UseGuards(AuthorizationGuard, RolesGuard)
   async createAppointment(
   @Body() createAppointmentDto: CreateAppointmentDto): Promise<Appointments> {
@@ -21,14 +21,14 @@ export class AppointmentsController {
   }
 
   @Put('/cancel/:id')
-  @Rol(userRoles.member)
+  @Rol(userRoles.member, userRoles.admin)
   @UseGuards(AuthorizationGuard, RolesGuard)
   async cancelAppointment(@Param('id') appointmentId: string) {
     return await this.appointmentsService.cancelAppointment(appointmentId);
   }
 
   @Put(':id')
-  @Rol(userRoles.member)
+  @Rol(userRoles.member, userRoles.admin)
   @UseGuards(AuthorizationGuard, RolesGuard)
   async modifyAppointment(
       @Param('id') appointmentId: string,
