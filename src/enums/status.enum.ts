@@ -18,3 +18,14 @@ export enum statusUser {
     inactive = "inactive",
 }
 
+export enum statusClass {
+    active = "active",
+    inactive = "inactive",
+}
+
+export enum statusOrder {
+    pending = "pending",
+    cancelled = "cancelled",
+    completed = "completed"
+}
+

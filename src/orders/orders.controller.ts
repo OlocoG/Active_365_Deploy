@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from 'src/dto/create-order.dto';
 import { Rol } from 'src/decorators/roles.decorator';
@@ -9,6 +9,23 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  @Get()
+  getAllOrders(){
+    return this.ordersService.getAllOrders();
+  }
+
+  @Put('cancel/:id')
+  @Rol(userRoles.registered, userRoles.admin, userRoles.member)
+  @UseGuards(AuthorizationGuard, RolesGuard)
+  deleteOrder(@Param('id', ParseUUIDPipe) orderId:string) {
+    return this.ordersService.deleteOrder(orderId);
+  } 
+
+  @Get('user/:id')
+  getOrdersByUser(@Param('id', ParseUUIDPipe) userId:string){
+    return this.ordersService.getOrdersByUser(userId);
+  }
+
   @Get(':id')
   @Rol(userRoles.registered, userRoles.admin, userRoles.member)
   @UseGuards(AuthorizationGuard, RolesGuard)
@@ -16,18 +33,11 @@ export class OrdersController {
     return this.ordersService.getOrder(id);
   }
   
-  // @Put(':id')
-  // updateOrder(@Param('id', ParseUUIDPipe) id:string, @Body() order: CreateOrderDto) {
-  //   const { userId, products } = order;
-  //   return this.ordersService.updateOrder(id, userId, products);
-  // }
-  
   @Post()
-  @Rol(userRoles.registered, userRoles.member)
+  @Rol(userRoles.registered, userRoles.admin, userRoles.member)
   @UseGuards(AuthorizationGuard, RolesGuard)
   createOrder(@Body() order: CreateOrderDto) {
       const { userId, products } = order;
       return this.ordersService.createOrder(userId, products);
   }
-
 }

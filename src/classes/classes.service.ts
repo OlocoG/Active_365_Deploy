@@ -6,6 +6,7 @@ import { Gyms } from 'src/entities/gyms.entity';
 import { FilesUploadService } from 'src/files-upload/files-upload.service';
 import { DataSource, Repository } from 'typeorm';
 import * as data from 'src/seeders/classes.json';
+import { statusClass } from 'src/enums/status.enum';
 
 @Injectable()
 export class ClassesService {
@@ -19,6 +20,7 @@ export class ClassesService {
   ) {}
 
   async classesSeeder() {
+    const currentDate = new Date();
     const gyms = await this.gymsRepository.find();
 
     for (const element of data.classes) {
@@ -35,6 +37,9 @@ export class ClassesService {
         newClass.date = new Date (element.date);
         newClass.time = element.time;
         newClass.gym = gymData;
+        if (newClass.date < currentDate) {
+          newClass.status = statusClass.inactive;
+        }
         await this.classesRepository.save(newClass);
       }
     }
@@ -42,6 +47,7 @@ export class ClassesService {
   }
 
   async getClasses() {
+    const currentDate = new Date();
     const classes = await this.classesRepository.find({
       relations: ['gym'],
       select: {
@@ -111,6 +117,11 @@ export class ClassesService {
     gymId: string,
     file?: Express.Multer.File,
   ) {
+
+    const currentDate = new Date();
+    if (date < currentDate) {
+      throw new Error('Date must be greater than current date');
+    }
     return this.dataSource.transaction(async (manager) => {
       const gym = await manager.findOne(Gyms, { where: { id: gymId } });
       if (!gym) {
@@ -167,4 +178,15 @@ export class ClassesService {
       return updatedClass;
     });
   }
+
+  async cancelClass(id: string) {
+      return this.dataSource.transaction(async (manager) => { 
+        const classToCancel = await manager.findOneBy(Classes, { id });
+        if (!classToCancel) {
+          throw new NotFoundException(`Class with id ${id} not found`);
+        }
+        await manager.update(Classes, { id }, { status: statusClass.inactive });
+        return `Class ${classToCancel.name} cancelled successfully`;
+      }
+    )};
 }

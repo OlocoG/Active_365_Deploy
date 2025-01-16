@@ -9,6 +9,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import { Appointments } from './appointments.entity';
 import { Gyms } from './gyms.entity';
+import { statusClass } from 'src/enums/status.enum';
 
 @Entity({ name: 'Classes' })
 export class Classes {
@@ -32,6 +33,9 @@ export class Classes {
 
   @Column({ type: 'date', nullable: false })
   date: Date;
+
+  @Column({ type: 'varchar', length: 10, nullable: false, default: statusClass.active })
+  status: statusClass;
 
   @Column({ type: 'time', nullable: false })
   time: string;

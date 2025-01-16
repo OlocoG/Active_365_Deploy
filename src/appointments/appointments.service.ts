@@ -41,9 +41,9 @@ export class AppointmentsService {
             const dateObject = new Date(gymClass.date);
             const classStartTime = parseISO(`${dateObject.toISOString().split('T')[0]}T${gymClass.time}`);
             const oneHourBeforeClass = subHours(classStartTime, 1);
-            if (isBefore(currentTime, oneHourBeforeClass) === false) {
-            throw new BadRequestException('Appointments can only be created up to 1 hour before the class.');
-            }
+            // if (isBefore(currentTime, oneHourBeforeClass) === false) {
+            // throw new BadRequestException('Appointments can only be created up to 1 hour before the class.');
+            // }
     
             const currentAppointments = await manager.count(Appointments, {
                 where: { classes: gymClass },
