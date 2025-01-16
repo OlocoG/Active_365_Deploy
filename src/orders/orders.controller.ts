@@ -15,8 +15,8 @@ export class OrdersController {
   }
 
   @Put('cancel/:id')
-  // @Rol(userRoles.registered, userRoles.admin, userRoles.member)
-  // @UseGuards(AuthorizationGuard, RolesGuard)
+  @Rol(userRoles.registered, userRoles.admin, userRoles.member)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   deleteOrder(@Param('id', ParseUUIDPipe) orderId:string) {
     return this.ordersService.deleteOrder(orderId);
   } 
@@ -27,15 +27,15 @@ export class OrdersController {
   }
 
   @Get(':id')
-  // @Rol(userRoles.registered, userRoles.admin, userRoles.member)
-  // @UseGuards(AuthorizationGuard, RolesGuard)
+  @Rol(userRoles.registered, userRoles.admin, userRoles.member)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   getOrder(@Param('id', ParseUUIDPipe) id:string){
     return this.ordersService.getOrder(id);
   }
   
   @Post()
-  // @Rol(userRoles.registered, userRoles.admin, userRoles.member)
-  // @UseGuards(AuthorizationGuard, RolesGuard)
+  @Rol(userRoles.registered, userRoles.admin, userRoles.member)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   createOrder(@Body() order: CreateOrderDto) {
       const { userId, products } = order;
       return this.ordersService.createOrder(userId, products);

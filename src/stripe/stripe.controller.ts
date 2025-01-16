@@ -6,6 +6,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { StripeService } from './stripe.service';
+import { Rol } from 'src/decorators/roles.decorator';
+import { userRoles } from 'src/enums/userRoles.enum';
 
 @Controller('checkout')
 export class StripeController {

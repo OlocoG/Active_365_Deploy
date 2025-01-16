@@ -42,6 +42,8 @@ export class ClassesController {
   }
 
   @Put('cancel/:id')
+  @Rol(userRoles.partner, userRoles.admin)
+  @UseGuards(AuthorizationGuard, RolesGuard)
   cancelClass(@Param('id', ParseUUIDPipe) id: string) {
     return this.classesService.cancelClass(id);
   }
